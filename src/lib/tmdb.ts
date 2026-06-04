@@ -42,25 +42,6 @@ function buildParams(prefs: QuestionnaireAnswers, langOverride?: string): URLSea
   return params;
 }
 
-async function movieHasReviews(id: number): Promise<boolean> {
-  const params = new URLSearchParams({ api_key: process.env.TMDB_API_KEY!, page: "1" });
-  try {
-    const res = await fetch(`${TMDB_BASE}/movie/${id}/reviews?${params}`);
-    if (!res.ok) return true;
-    const data = await res.json();
-    return (data.total_results ?? 0) >= 2;
-  } catch {
-    return true;
-  }
-}
-
-async function filterByReviews(movies: TMDBMovie[]): Promise<TMDBMovie[]> {
-  const results = await Promise.all(
-    movies.map(async (m) => ({ movie: m, ok: await movieHasReviews(m.id) }))
-  );
-  return results.filter(({ ok }) => ok).map(({ movie }) => movie);
-}
-
 async function fetchPage(baseParams: URLSearchParams, page: number): Promise<TMDBMovie[]> {
   const params = new URLSearchParams(baseParams);
   params.set("page", String(page));
@@ -105,6 +86,5 @@ export async function fetchMovieCandidates(prefs: QuestionnaireAnswers): Promise
       .sort((a, b) => b.vote_average - a.vote_average);
   }
 
-  const deduplicated = results.slice(0, 60);
-  return filterByReviews(deduplicated);
+  return results.slice(0, 60);
 }
