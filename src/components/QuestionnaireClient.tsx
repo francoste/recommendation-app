@@ -104,7 +104,7 @@ export function QuestionnaireClient() {
             <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
               Género
             </h2>
-            <GenreChips value={genres} onChange={setGenres} />
+            <GenreChips value={genres} onChange={setGenres} contentType={contentType} />
           </section>
 
           <section>
