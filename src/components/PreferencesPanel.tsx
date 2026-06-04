@@ -44,7 +44,7 @@ function PersonBlock({ answers, name }: { answers: QuestionnaireAnswers; name: s
 
 interface Props {
   person1: QuestionnaireAnswers;
-  person2: QuestionnaireAnswers;
+  person2?: QuestionnaireAnswers;
 }
 
 export function PreferencesPanel({ person1, person2 }: Props) {
@@ -52,9 +52,13 @@ export function PreferencesPanel({ person1, person2 }: Props) {
     <div className="bg-beige-50 rounded-xl border border-beige-200 shadow-sm p-5">
       <h2 className="font-serif text-lg text-stone-700 mb-4">Preferencias</h2>
       <div className="flex gap-5">
-        <PersonBlock answers={person1} name="Persona 1" />
-        <div className="w-px bg-beige-200 self-stretch" />
-        <PersonBlock answers={person2} name="Persona 2" />
+        <PersonBlock answers={person1} name={person2 ? "Persona 1" : "Tu selección"} />
+        {person2 && (
+          <>
+            <div className="w-px bg-beige-200 self-stretch" />
+            <PersonBlock answers={person2} name="Persona 2" />
+          </>
+        )}
       </div>
     </div>
   );

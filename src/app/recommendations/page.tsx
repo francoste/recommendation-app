@@ -114,22 +114,31 @@ export default function RecommendationsPage() {
 
         {!loading && !error && currentMovie && (
           <>
-            <div className={isPareja ? "flex flex-col lg:flex-row gap-6 items-start" : ""}>
-              <div className={isPareja ? "w-full lg:w-1/2" : ""}>
+            {isPareja ? (
+              <div className="flex flex-col lg:flex-row gap-6 items-start">
+                <div className="w-full lg:w-1/2">
+                  <MovieCard movie={currentMovie} />
+                </div>
+                <div className="w-full lg:w-1/2 flex flex-col gap-4">
+                  <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
+                  <WatchProviders
+                    flatrate={providers?.flatrate ?? []}
+                    rent={providers?.rent ?? []}
+                    loading={loadingProviders}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4">
                 <MovieCard movie={currentMovie} />
+                <PreferencesPanel person1={prefs!.person1} />
                 <WatchProviders
                   flatrate={providers?.flatrate ?? []}
                   rent={providers?.rent ?? []}
                   loading={loadingProviders}
                 />
               </div>
-
-              {isPareja && prefs?.person2 && (
-                <div className="w-full lg:w-1/2">
-                  <PreferencesPanel person1={prefs.person1} person2={prefs.person2} />
-                </div>
-              )}
-            </div>
+            )}
 
             <button
               onClick={handleRefresh}
