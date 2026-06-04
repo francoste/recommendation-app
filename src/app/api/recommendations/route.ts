@@ -35,11 +35,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const top10 = candidates
+    const top50 = candidates
       .sort((a, b) => b.vote_average - a.vote_average)
-      .slice(0, 10);
+      .slice(0, 50);
 
-    return NextResponse.json({ candidates: top10 });
+    return NextResponse.json({ candidates: top50 });
   } catch (err) {
     console.error("Recommendations error:", err);
     return NextResponse.json(
