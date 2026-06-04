@@ -13,6 +13,23 @@ interface ProvidersState {
   rent: WatchProvider[];
 }
 
+function ExpandableDescription({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div>
+      <p className={`text-sm text-stone-600 leading-relaxed ${expanded ? "" : "line-clamp-4"}`}>
+        {text}
+      </p>
+      <button
+        onClick={() => setExpanded((v) => !v)}
+        className="text-xs text-cyan-700 hover:text-cyan-900 mt-1 font-medium transition-colors"
+      >
+        {expanded ? "ver menos" : "ver más..."}
+      </button>
+    </div>
+  );
+}
+
 function pickRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -151,9 +168,7 @@ export default function RecommendationsPage() {
                     <StarRating score={currentMovie.vote_average} />
                   </div>
                   {currentMovie.overview && (
-                    <p className="text-sm text-stone-600 leading-relaxed">
-                      {currentMovie.overview}
-                    </p>
+                    <ExpandableDescription key={currentMovie.id} text={currentMovie.overview} />
                   )}
                 </div>
                 <WatchProviders
