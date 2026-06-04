@@ -7,7 +7,7 @@ import { YearRangeSlider } from "@/components/ui/YearRangeSlider";
 import { DurationToggle } from "@/components/ui/DurationToggle";
 import { OriginSelector } from "@/components/ui/OriginSelector";
 import { ProgressStepper } from "@/components/ProgressStepper";
-import type { Genre, Duration, Origin, QuestionnaireAnswers, Preferences } from "@/lib/types";
+import type { Genre, Duration, Origin, ContentType, QuestionnaireAnswers, Preferences } from "@/lib/types";
 
 export function QuestionnaireClient() {
   const searchParams = useSearchParams();
@@ -15,6 +15,7 @@ export function QuestionnaireClient() {
 
   const mode = (searchParams.get("mode") ?? "solo") as "solo" | "pareja";
   const person = (parseInt(searchParams.get("person") ?? "1") || 1) as 1 | 2;
+  const contentType = (searchParams.get("type") ?? "pelicula") as ContentType;
 
   const [genres, setGenres] = useState<Genre[]>([]);
   const [yearMin, setYearMin] = useState(1990);
@@ -45,7 +46,7 @@ export function QuestionnaireClient() {
 
     if (mode === "pareja" && person === 1) {
       sessionStorage.setItem("person1Answers", JSON.stringify(answers));
-      router.push("/questionnaire?mode=pareja&person=2");
+      router.push(`/questionnaire?mode=pareja&person=2&type=${contentType}`);
       return;
     }
 
@@ -63,9 +64,9 @@ export function QuestionnaireClient() {
         router.push("/questionnaire?mode=pareja&person=1");
         return;
       }
-      prefs = { mode: "pareja", person1: p1, person2: answers };
+      prefs = { mode: "pareja", contentType, person1: p1, person2: answers };
     } else {
-      prefs = { mode: "solo", person1: answers };
+      prefs = { mode: "solo", contentType, person1: answers };
     }
 
     sessionStorage.setItem("preferences", JSON.stringify(prefs));

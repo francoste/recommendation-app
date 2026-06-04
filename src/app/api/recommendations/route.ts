@@ -11,28 +11,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
     }
     const prefs = body as Preferences;
+    const contentType = prefs.contentType ?? "pelicula";
 
     let candidates;
     if (prefs.mode === "solo") {
-      candidates = await fetchMovieCandidates(prefs.person1);
+      candidates = await fetchMovieCandidates(prefs.person1, contentType);
     } else {
       const [c1, c2] = await Promise.all([
-        fetchMovieCandidates(prefs.person1),
-        fetchMovieCandidates(prefs.person2!),
+        fetchMovieCandidates(prefs.person1, contentType),
+        fetchMovieCandidates(prefs.person2!, contentType),
       ]);
 
       const p1Anim = prefs.person1.genres.includes("animación");
       const p2Anim = prefs.person2!.genres.includes("animación");
 
       if (p1Anim !== p2Anim) {
-        // One person wants animation, the other doesn't → guarantee 25/25 split
         const [animPool, regularPool] = p1Anim ? [c1, c2] : [c2, c1];
         const seen = new Set<number>();
         const take = (pool: typeof c1, n: number) =>
           pool.filter((m) => { if (seen.has(m.id)) return false; seen.add(m.id); return true; }).slice(0, n);
         candidates = [...take(animPool, 25), ...take(regularPool, 25)];
       } else {
-        // Both selected animation or neither → normal merge
         const seen = new Set<number>();
         candidates = [...c1, ...c2].filter((m) => {
           if (seen.has(m.id)) return false;
@@ -44,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     if (candidates.length === 0) {
       return NextResponse.json(
-        { error: "No encontramos películas con esos filtros. Intentá con criterios más amplios." },
+        { error: "No encontramos títulos con esos filtros. Intentá con criterios más amplios." },
         { status: 404 }
       );
     }

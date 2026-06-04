@@ -28,7 +28,14 @@ export function MovieCard({ movie }: Props) {
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-serif text-xl text-stone-900 leading-tight">{movie.title}</h3>
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3 className="font-serif text-xl text-stone-900 leading-tight">{movie.title}</h3>
+          {movie.media_type === "tv" && (
+            <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
+              Serie
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-3 mt-1 mb-3">
           <span className="text-sm text-stone-400">{year}</span>
           <span className="text-amber-500 text-sm font-medium">★ {rating}</span>

@@ -24,8 +24,11 @@ export interface QuestionnaireAnswers {
   origin: Origin;
 }
 
+export type ContentType = "pelicula" | "serie" | "ambas";
+
 export interface Preferences {
   mode: "solo" | "pareja";
+  contentType: ContentType;
   person1: QuestionnaireAnswers;
   person2?: QuestionnaireAnswers;
 }
@@ -40,6 +43,7 @@ export interface TMDBMovie {
   vote_average: number;
   runtime?: number;
   genre_ids: number[];
+  media_type: "movie" | "tv";
 }
 
 export type RecommendedMovie = TMDBMovie;
