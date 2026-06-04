@@ -128,7 +128,7 @@ async function fetchTvPages(prefs: QuestionnaireAnswers, lang?: string): Promise
   return pages.flat().map(normalizeTv);
 }
 
-function dedupe(movies: TMDBMovie[]): TMDBMovie[] {
+export function dedupe(movies: TMDBMovie[]): TMDBMovie[] {
   const seen = new Set<number>();
   return movies.filter((m) => {
     const key = m.id * 10 + (m.media_type === "tv" ? 1 : 0);
@@ -146,8 +146,12 @@ async function fetchByType(prefs: QuestionnaireAnswers, contentType: ContentType
     if (langs.length === 1) {
       let results = await fetcher(prefs, langs[0] ?? undefined);
       if (results.length < 10) {
-        // Retry without runtime filter
-        const relaxed = { ...prefs, duration: [] as typeof prefs.duration };
+        // Retry without movie runtime filter only; preserve TV duration selection
+        const movieDurations = ["corta", "media", "larga"] as const;
+        const relaxedDuration = prefs.duration.filter(
+          (d): d is typeof movieDurations[number] => !(movieDurations as readonly string[]).includes(d)
+        ) as typeof prefs.duration;
+        const relaxed = { ...prefs, duration: relaxedDuration };
         results = await fetcher(relaxed, langs[0] ?? undefined);
       }
       return results;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchMovieCandidates } from "@/lib/tmdb";
+import { fetchMovieCandidates, dedupe } from "@/lib/tmdb";
 import type { Preferences } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
@@ -29,15 +29,10 @@ export async function POST(req: NextRequest) {
         const [animPool, regularPool] = p1Anim ? [c1, c2] : [c2, c1];
         const seen = new Set<number>();
         const take = (pool: typeof c1, n: number) =>
-          pool.filter((m) => { if (seen.has(m.id)) return false; seen.add(m.id); return true; }).slice(0, n);
+          dedupe(pool).filter((m) => { if (seen.has(m.id)) return false; seen.add(m.id); return true; }).slice(0, n);
         candidates = [...take(animPool, 25), ...take(regularPool, 25)];
       } else {
-        const seen = new Set<number>();
-        candidates = [...c1, ...c2].filter((m) => {
-          if (seen.has(m.id)) return false;
-          seen.add(m.id);
-          return true;
-        });
+        candidates = dedupe([...c1, ...c2]);
       }
     }
 

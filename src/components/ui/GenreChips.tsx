@@ -32,7 +32,7 @@ interface Props {
 export function GenreChips({ value, onChange, contentType }: Props) {
   const visible = contentType === "serie"
     ? GENRES.filter((g) => TV_GENRE_MAP[g.value] !== null)
-    : GENRES.filter((g) => GENRE_MAP[g.value] !== null);
+    : GENRES.filter((g) => GENRE_MAP[g.value] !== null); // default "pelicula" or undefined → movie genres
 
   function toggle(genre: Genre) {
     onChange(

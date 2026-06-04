@@ -82,7 +82,7 @@ export function QuestionnaireClient() {
 
   const backHref =
     mode === "pareja" && person === 2
-      ? "/questionnaire?mode=pareja&person=1"
+      ? `/questionnaire?mode=pareja&person=1&type=${contentType}`
       : "/";
 
   return (
