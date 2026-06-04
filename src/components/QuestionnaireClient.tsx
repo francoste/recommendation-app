@@ -1,0 +1,126 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { GenreChips } from "@/components/ui/GenreChips";
+import { YearRangeSlider } from "@/components/ui/YearRangeSlider";
+import { DurationToggle } from "@/components/ui/DurationToggle";
+import { OriginSelector } from "@/components/ui/OriginSelector";
+import { ProgressStepper } from "@/components/ProgressStepper";
+import type { Genre, Duration, Origin, QuestionnaireAnswers, Preferences } from "@/lib/types";
+
+export function QuestionnaireClient() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const mode = (searchParams.get("mode") ?? "solo") as "solo" | "pareja";
+  const person = (parseInt(searchParams.get("person") ?? "1") || 1) as 1 | 2;
+
+  const [genres, setGenres] = useState<Genre[]>([]);
+  const [yearMin, setYearMin] = useState(1990);
+  const [yearMax, setYearMax] = useState(2024);
+  const [duration, setDuration] = useState<Duration[]>([]);
+  const [origin, setOrigin] = useState<Origin | null>(null);
+
+  useEffect(() => {
+    setGenres([]);
+    setYearMin(1990);
+    setYearMax(2024);
+    setDuration([]);
+    setOrigin(null);
+  }, [person]);
+
+  const isComplete = genres.length > 0 && duration.length > 0 && origin !== null;
+
+  function handleSubmit() {
+    if (!isComplete) return;
+
+    const answers: QuestionnaireAnswers = {
+      genres,
+      yearMin,
+      yearMax,
+      duration,
+      origin: origin!,
+    };
+
+    if (mode === "pareja" && person === 1) {
+      sessionStorage.setItem("person1Answers", JSON.stringify(answers));
+      router.push("/questionnaire?mode=pareja&person=2");
+      return;
+    }
+
+    let prefs: Preferences;
+    if (mode === "pareja") {
+      const raw = sessionStorage.getItem("person1Answers");
+      const p1: QuestionnaireAnswers = raw ? JSON.parse(raw) : answers;
+      prefs = { mode: "pareja", person1: p1, person2: answers };
+    } else {
+      prefs = { mode: "solo", person1: answers };
+    }
+
+    sessionStorage.setItem("preferences", JSON.stringify(prefs));
+    router.push("/recommendations");
+  }
+
+  const title =
+    mode === "solo"
+      ? "¿Qué te apetece ver?"
+      : person === 1
+      ? "¿Cómo estás vos esta noche?"
+      : "¿Y vos, cómo estás?";
+
+  return (
+    <main className="min-h-screen bg-pink-50 pb-28">
+      <div className="max-w-sm mx-auto px-4 pt-8 flex flex-col gap-7">
+        {mode === "pareja" && <ProgressStepper step={person} />}
+
+        <h1 className="font-serif text-2xl text-gray-800 text-center">{title}</h1>
+
+        <section>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+            Género
+          </h2>
+          <GenreChips value={genres} onChange={setGenres} />
+        </section>
+
+        <section>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+            Época — {yearMin} a {yearMax}
+          </h2>
+          <YearRangeSlider
+            min={yearMin}
+            max={yearMax}
+            onMinChange={setYearMin}
+            onMaxChange={setYearMax}
+          />
+        </section>
+
+        <section>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+            Duración
+          </h2>
+          <DurationToggle value={duration} onChange={setDuration} />
+        </section>
+
+        <section>
+          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+            Origen
+          </h2>
+          <OriginSelector value={origin} onChange={setOrigin} />
+        </section>
+
+        <button
+          onClick={handleSubmit}
+          disabled={!isComplete}
+          className={`w-full py-4 rounded-2xl font-semibold text-white text-lg transition-all ${
+            isComplete
+              ? "bg-gradient-to-r from-pink-400 to-rose-400 shadow-md active:scale-95"
+              : "bg-pink-200 cursor-not-allowed"
+          }`}
+        >
+          {mode === "pareja" && person === 1 ? "Siguiente ➡️" : "Ver recomendaciones ✨"}
+        </button>
+      </div>
+    </main>
+  );
+}
