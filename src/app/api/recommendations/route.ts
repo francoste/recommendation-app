@@ -38,9 +38,8 @@ export async function POST(req: NextRequest) {
     const top10 = candidates
       .sort((a, b) => b.vote_average - a.vote_average)
       .slice(0, 10);
-    const recommendations = [top10[Math.floor(Math.random() * top10.length)]];
 
-    return NextResponse.json({ recommendations });
+    return NextResponse.json({ candidates: top10 });
   } catch (err) {
     console.error("Recommendations error:", err);
     return NextResponse.json(

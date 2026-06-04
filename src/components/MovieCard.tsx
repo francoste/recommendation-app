@@ -34,7 +34,7 @@ export function MovieCard({ movie }: Props) {
           <span className="text-amber-500 text-sm font-medium">★ {rating}</span>
         </div>
         {movie.overview && (
-          <p className="text-sm text-stone-600 leading-relaxed line-clamp-4">{movie.overview}</p>
+          <p className="text-sm text-stone-600 leading-relaxed">{movie.overview}</p>
         )}
       </div>
     </div>

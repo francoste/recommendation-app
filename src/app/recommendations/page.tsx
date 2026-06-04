@@ -1,25 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { MovieCard } from "@/components/MovieCard";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { PreferencesPanel } from "@/components/PreferencesPanel";
-import type { Preferences, RecommendedMovie } from "@/lib/types";
+import { WatchProviders } from "@/components/WatchProviders";
+import type { Preferences, RecommendedMovie, WatchProvider } from "@/lib/types";
+
+interface ProvidersState {
+  flatrate: WatchProvider[];
+  rent: WatchProvider[];
+}
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
 
 export default function RecommendationsPage() {
   const router = useRouter();
-  const [movies, setMovies] = useState<RecommendedMovie[]>([]);
+  const [candidates, setCandidates] = useState<RecommendedMovie[]>([]);
+  const [currentMovie, setCurrentMovie] = useState<RecommendedMovie | null>(null);
   const [prefs, setPrefs] = useState<Preferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [providers, setProviders] = useState<ProvidersState | null>(null);
+  const [loadingProviders, setLoadingProviders] = useState(false);
+  const seenIds = useRef<Set<number>>(new Set());
+
+  const fetchProviders = useCallback(async (movieId: number) => {
+    setLoadingProviders(true);
+    setProviders(null);
+    try {
+      const res = await fetch(`/api/providers?id=${movieId}`);
+      const data = await res.json();
+      if (!data.error) setProviders({ flatrate: data.flatrate ?? [], rent: data.rent ?? [] });
+    } catch {
+      setProviders({ flatrate: [], rent: [] });
+    } finally {
+      setLoadingProviders(false);
+    }
+  }, []);
+
+  const selectMovie = useCallback(
+    (movie: RecommendedMovie) => {
+      seenIds.current.add(movie.id);
+      setCurrentMovie(movie);
+      fetchProviders(movie.id);
+    },
+    [fetchProviders]
+  );
 
   useEffect(() => {
     const raw = sessionStorage.getItem("preferences");
-    if (!raw) {
-      router.push("/");
-      return;
-    }
+    if (!raw) { router.push("/"); return; }
 
     let parsed: Preferences;
     try {
@@ -38,11 +72,23 @@ export default function RecommendationsPage() {
       .then((r) => r.json())
       .then((data) => {
         if (data.error) throw new Error(data.error);
-        setMovies(data.recommendations);
+        const list: RecommendedMovie[] = data.candidates ?? [];
+        if (list.length === 0) throw new Error("No encontramos películas con esos filtros.");
+        setCandidates(list);
+        selectMovie(pickRandom(list));
       })
       .catch((err: Error) => setError(err.message ?? "Error desconocido"))
       .finally(() => setLoading(false));
-  }, [router]);
+  }, [router, selectMovie]);
+
+  const handleRefresh = () => {
+    if (candidates.length === 0 || !currentMovie) return;
+    const unseen = candidates.filter((m) => !seenIds.current.has(m.id));
+    const pool = unseen.length > 0 ? unseen : candidates.filter((m) => m.id !== currentMovie.id);
+    if (pool.length === 0) return;
+    if (unseen.length === 0) seenIds.current.clear();
+    selectMovie(pickRandom(pool));
+  };
 
   const isPareja = prefs?.mode === "pareja";
 
@@ -66,13 +112,16 @@ export default function RecommendationsPage() {
           </div>
         )}
 
-        {!loading && !error && (
+        {!loading && !error && currentMovie && (
           <>
             <div className={isPareja ? "flex flex-col lg:flex-row gap-6 items-start" : ""}>
               <div className={isPareja ? "w-full lg:w-1/2" : ""}>
-                {movies.map((movie) => (
-                  <MovieCard key={movie.id} movie={movie} />
-                ))}
+                <MovieCard movie={currentMovie} />
+                <WatchProviders
+                  flatrate={providers?.flatrate ?? []}
+                  rent={providers?.rent ?? []}
+                  loading={loadingProviders}
+                />
               </div>
 
               {isPareja && prefs?.person2 && (
@@ -83,8 +132,16 @@ export default function RecommendationsPage() {
             </div>
 
             <button
+              onClick={handleRefresh}
+              disabled={loadingProviders}
+              className="w-full mt-6 py-4 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Otra película 🔀
+            </button>
+
+            <button
               onClick={() => router.push("/")}
-              className="w-full mt-8 py-4 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white"
+              className="w-full mt-3 py-4 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white"
             >
               Nueva búsqueda 🔄
             </button>

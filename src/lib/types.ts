@@ -38,3 +38,9 @@ export interface TMDBMovie {
 }
 
 export type RecommendedMovie = TMDBMovie;
+
+export interface WatchProvider {
+  id: number;
+  name: string;
+  logo_path: string;
+}
