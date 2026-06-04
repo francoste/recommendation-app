@@ -156,28 +156,10 @@ async function fetchByType(prefs: QuestionnaireAnswers, contentType: ContentType
     return dedupe(all.flat().sort((a, b) => b.vote_average - a.vote_average));
   }
 
-  if (contentType === "pelicula") {
-    return (await fetchAllLangs(fetchMoviePages)).slice(0, 60);
-  }
   if (contentType === "serie") {
     return (await fetchAllLangs(fetchTvPages)).slice(0, 60);
   }
-  // "ambas": fetch both and interleave
-  const [movies, shows] = await Promise.all([
-    fetchAllLangs(fetchMoviePages),
-    fetchAllLangs(fetchTvPages),
-  ]);
-  const seen = new Set<number>();
-  const merged: TMDBMovie[] = [];
-  const maxLen = Math.max(movies.length, shows.length);
-  for (let i = 0; i < maxLen && merged.length < 60; i++) {
-    for (const m of [movies[i], shows[i]]) {
-      if (!m) continue;
-      const key = m.id * 10 + (m.media_type === "tv" ? 1 : 0);
-      if (!seen.has(key)) { seen.add(key); merged.push(m); }
-    }
-  }
-  return merged;
+  return (await fetchAllLangs(fetchMoviePages)).slice(0, 60);
 }
 
 export async function fetchMovieCandidates(prefs: QuestionnaireAnswers, contentType: ContentType = "pelicula"): Promise<TMDBMovie[]> {

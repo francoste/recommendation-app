@@ -27,7 +27,7 @@ export interface QuestionnaireAnswers {
   origin: Origin;
 }
 
-export type ContentType = "pelicula" | "serie" | "ambas";
+export type ContentType = "pelicula" | "serie";
 
 export interface Preferences {
   mode: "solo" | "pareja";

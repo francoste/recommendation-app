@@ -7,7 +7,6 @@ import type { ContentType } from "@/lib/types";
 const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
   { value: "pelicula", label: "Películas" },
   { value: "serie",    label: "Series" },
-  { value: "ambas",    label: "Ambas" },
 ];
 
 export default function Home() {

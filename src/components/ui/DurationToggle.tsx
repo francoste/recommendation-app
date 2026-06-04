@@ -49,14 +49,5 @@ export function DurationToggle({ value, onChange, contentType }: Props) {
     );
   }
 
-  if (contentType === "ambas") {
-    return (
-      <div className="flex flex-col gap-2">
-        <Row options={MOVIE_OPTIONS} />
-        <Row options={TV_OPTIONS} />
-      </div>
-    );
-  }
-
   return <Row options={contentType === "serie" ? TV_OPTIONS : MOVIE_OPTIONS} />;
 }
