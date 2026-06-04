@@ -131,7 +131,7 @@ export default function RecommendationsPage() {
                 <MovieCard movie={currentMovie} posterOnly />
               </div>
 
-              {/* Col 2 — Título, rating y descripción */}
+              {/* Col 2 — Título, rating, descripción y dónde verla */}
               <div className="w-full lg:w-5/12 flex flex-col gap-4">
                 <div className="bg-beige-50 rounded-2xl border border-beige-200 shadow-md p-5 flex flex-col gap-3">
                   <div className="flex items-start justify-between gap-2">
@@ -156,16 +156,16 @@ export default function RecommendationsPage() {
                     </p>
                   )}
                 </div>
-              </div>
-
-              {/* Col 3 — Panel lateral */}
-              <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:sticky lg:top-8">
-                <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
                 <WatchProviders
                   flatrate={providers?.flatrate ?? []}
                   rent={providers?.rent ?? []}
                   loading={loadingProviders}
                 />
+              </div>
+
+              {/* Col 3 — Panel lateral */}
+              <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:sticky lg:top-8">
+                <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
                 <div className="flex gap-2">
                   <button
                     onClick={handleRefresh}
