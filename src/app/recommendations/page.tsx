@@ -95,6 +95,13 @@ export default function RecommendationsPage() {
   return (
     <main className="min-h-screen bg-beige-100 pb-16">
       <div className="mx-auto px-4 pt-8 max-w-4xl">
+        <button
+          onClick={() => router.back()}
+          className="self-start flex items-center gap-1 text-sm text-stone-400 hover:text-stone-600 transition-colors mb-4"
+        >
+          ← Volver
+        </button>
+
         <h1 className="font-serif text-3xl text-stone-900 text-center mb-1">Tu recomendación 🎬</h1>
         <p className="text-center text-stone-400 text-sm mb-8">Basada en tus preferencias</p>
 
