@@ -19,8 +19,8 @@ function PersonBlock({ answers, name }: { answers: QuestionnaireAnswers; name: s
 
   return (
     <div className="flex-1 min-w-0">
-      <p className="text-xs font-semibold text-pink-400 uppercase tracking-wide mb-2">{name}</p>
-      <ul className="space-y-1.5 text-sm text-gray-600">
+      <p className="text-xs font-semibold text-cyan-700 uppercase tracking-wider mb-3">{name}</p>
+      <ul className="space-y-2 text-sm text-stone-600">
         <li className="flex items-start gap-2">
           <span>🎭</span>
           <span className="capitalize">{answers.genres.join(", ")}</span>
@@ -49,11 +49,11 @@ interface Props {
 
 export function PreferencesPanel({ person1, person2 }: Props) {
   return (
-    <div className="bg-white rounded-2xl border border-pink-100 shadow-sm p-5">
-      <h2 className="font-serif text-lg text-gray-700 mb-4">Sus elecciones</h2>
+    <div className="bg-beige-50 rounded-xl border border-beige-200 shadow-sm p-5">
+      <h2 className="font-serif text-lg text-stone-700 mb-4">Preferencias</h2>
       <div className="flex gap-5">
         <PersonBlock answers={person1} name="Persona 1" />
-        <div className="w-px bg-pink-100 self-stretch" />
+        <div className="w-px bg-beige-200 self-stretch" />
         <PersonBlock answers={person2} name="Persona 2" />
       </div>
     </div>

@@ -12,7 +12,7 @@ export function MovieCard({ movie }: Props) {
     : null;
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-pink-100">
+    <div className="bg-beige-50 rounded-xl overflow-hidden shadow-sm border border-beige-200">
       <div className="relative w-full" style={{ aspectRatio: "2/3" }}>
         {posterUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -22,19 +22,19 @@ export function MovieCard({ movie }: Props) {
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full bg-pink-50 flex items-center justify-center min-h-48">
+          <div className="w-full h-full bg-beige-200 flex items-center justify-center min-h-48">
             <span className="text-5xl">🎬</span>
           </div>
         )}
       </div>
       <div className="p-4">
-        <h3 className="font-serif text-xl text-gray-800 leading-tight">{movie.title}</h3>
-        <div className="flex items-center gap-2 mt-1 mb-3">
-          <span className="text-sm text-gray-400">{year}</span>
-          <span className="text-yellow-400 text-sm font-medium">★ {rating}</span>
+        <h3 className="font-serif text-xl text-stone-900 leading-tight">{movie.title}</h3>
+        <div className="flex items-center gap-3 mt-1 mb-3">
+          <span className="text-sm text-stone-400">{year}</span>
+          <span className="text-amber-500 text-sm font-medium">★ {rating}</span>
         </div>
         {movie.overview && (
-          <p className="text-sm text-gray-500 leading-relaxed line-clamp-4">{movie.overview}</p>
+          <p className="text-sm text-stone-600 leading-relaxed line-clamp-4">{movie.overview}</p>
         )}
       </div>
     </div>

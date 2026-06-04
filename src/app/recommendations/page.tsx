@@ -47,19 +47,19 @@ export default function RecommendationsPage() {
   const isPareja = prefs?.mode === "pareja";
 
   return (
-    <main className="min-h-screen bg-pink-50 pb-16">
+    <main className="min-h-screen bg-beige-100 pb-16">
       <div className={`mx-auto px-4 pt-8 ${isPareja ? "max-w-4xl" : "max-w-sm"}`}>
-        <h1 className="font-serif text-3xl text-gray-800 text-center mb-1">Para esta noche</h1>
-        <p className="text-center text-pink-400 text-sm mb-6">✨ Elegida especialmente para ustedes</p>
+        <h1 className="font-serif text-3xl text-stone-900 text-center mb-1">Tu recomendación 🎬</h1>
+        <p className="text-center text-stone-400 text-sm mb-8">Basada en tus preferencias</p>
 
         {loading && <LoadingSpinner />}
 
         {error && (
-          <div className="bg-white rounded-2xl p-6 text-center border border-pink-100 shadow-sm">
-            <p className="text-gray-500 mb-4">{error}</p>
+          <div className="bg-beige-50 rounded-xl p-6 text-center border border-beige-200 shadow-sm">
+            <p className="text-stone-500 mb-4">{error}</p>
             <button
               onClick={() => router.push("/")}
-              className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-400 to-rose-400 text-white font-semibold"
+              className="px-6 py-3 rounded-lg bg-cyan-800 text-white font-semibold hover:bg-cyan-900"
             >
               Volver al inicio
             </button>
@@ -84,9 +84,9 @@ export default function RecommendationsPage() {
 
             <button
               onClick={() => router.push("/")}
-              className="w-full mt-8 py-4 rounded-2xl text-pink-500 bg-white border-2 border-pink-200 font-semibold active:scale-95 transition-transform"
+              className="w-full mt-8 py-4 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white"
             >
-              Buscar de nuevo 🔄
+              Nueva búsqueda 🔄
             </button>
           </>
         )}

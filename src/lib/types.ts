@@ -1,4 +1,3 @@
-export type Mood = "romántico" | "feliz" | "aventurero" | "relajado" | "emocionado" | "melancólico";
 export type Genre =
   | "comedia"
   | "drama"

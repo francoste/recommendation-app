@@ -74,27 +74,27 @@ export function QuestionnaireClient() {
 
   const title =
     mode === "solo"
-      ? "¿Qué te apetece ver?"
+      ? "¿Qué querés ver? 🎬"
       : person === 1
-      ? "¿Cómo estás vos esta noche?"
-      : "¿Y vos, cómo estás?";
+      ? "Tus preferencias 🎭"
+      : "¿Y la otra persona? 👤";
 
   return (
-    <main className="min-h-screen bg-pink-50 pb-28">
+    <main className="min-h-screen bg-beige-100 pb-28">
       <div className="max-w-sm mx-auto px-4 pt-8 flex flex-col gap-7">
         {mode === "pareja" && <ProgressStepper step={person} />}
 
-        <h1 className="font-serif text-2xl text-gray-800 text-center">{title}</h1>
+        <h1 className="font-serif text-2xl text-stone-900 text-center">{title}</h1>
 
         <section>
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
             Género
           </h2>
           <GenreChips value={genres} onChange={setGenres} />
         </section>
 
         <section>
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
             Época — {yearMin} a {yearMax}
           </h2>
           <YearRangeSlider
@@ -106,14 +106,14 @@ export function QuestionnaireClient() {
         </section>
 
         <section>
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
             Duración
           </h2>
           <DurationToggle value={duration} onChange={setDuration} />
         </section>
 
         <section>
-          <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
+          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
             Origen
           </h2>
           <OriginSelector value={origin} onChange={setOrigin} />
@@ -122,13 +122,13 @@ export function QuestionnaireClient() {
         <button
           onClick={handleSubmit}
           disabled={!isComplete}
-          className={`w-full py-4 rounded-2xl font-semibold text-white text-lg transition-all ${
+          className={`w-full py-4 rounded-xl font-semibold text-white text-base transition-all ${
             isComplete
-              ? "bg-gradient-to-r from-pink-400 to-rose-400 shadow-md active:scale-95"
-              : "bg-pink-200 cursor-not-allowed"
+              ? "bg-cyan-800 shadow-md active:scale-95 hover:bg-cyan-900"
+              : "bg-beige-200 text-stone-400 cursor-not-allowed"
           }`}
         >
-          {mode === "pareja" && person === 1 ? "Siguiente ➡️" : "Ver recomendaciones ✨"}
+          {mode === "pareja" && person === 1 ? "Siguiente →" : "Ver recomendación ✨"}
         </button>
       </div>
     </main>

@@ -4,11 +4,9 @@
 
 @layer base {
   body {
-    @apply bg-pink-50 text-gray-800;
+    @apply bg-beige-100 text-stone-900;
   }
-}
 
-@layer utilities {
   .font-serif {
     font-family: var(--font-serif), Georgia, serif;
   }
@@ -17,7 +15,7 @@
   }
 }
 
-/* Dual range slider — transparent track, pink thumb */
+/* Range slider — beige/cyan theme */
 .slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -33,22 +31,22 @@
 .slider-thumb::-webkit-slider-thumb {
   -webkit-appearance: none;
   pointer-events: all;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: #ec4899;
+  background: #155e75;
   cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(236, 72, 153, 0.35);
+  border: 2px solid #0e7490;
+  box-shadow: 0 2px 6px rgba(21, 94, 117, 0.3);
 }
 
 .slider-thumb::-moz-range-thumb {
   pointer-events: all;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: #ec4899;
+  background: #155e75;
   cursor: pointer;
-  border: 2px solid white;
-  box-shadow: 0 2px 6px rgba(236, 72, 153, 0.35);
+  border: 2px solid #0e7490;
+  box-shadow: 0 2px 6px rgba(21, 94, 117, 0.3);
 }

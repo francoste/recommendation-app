@@ -30,14 +30,14 @@ export function DurationToggle({ value, onChange }: Props) {
           <button
             key={opt.value}
             onClick={() => toggle(opt.value)}
-            className={`flex-1 py-3 rounded-2xl border-2 text-center transition-all active:scale-95 ${
-              selected ? "border-pink-400 bg-pink-50" : "border-pink-100 bg-white"
+            className={`flex-1 py-3 rounded-xl border text-center transition-all active:scale-95 ${
+              selected
+                ? "border-cyan-700 bg-cyan-800 text-white"
+                : "border-beige-200 bg-beige-50 text-stone-700 hover:border-beige-300"
             }`}
           >
-            <div className={`text-sm font-semibold ${selected ? "text-pink-600" : "text-gray-700"}`}>
-              {opt.label}
-            </div>
-            <div className="text-xs text-gray-400 mt-0.5">{opt.sub}</div>
+            <div className="text-sm font-semibold">{opt.label}</div>
+            <div className={`text-xs mt-0.5 ${selected ? "text-cyan-100" : "text-stone-400"}`}>{opt.sub}</div>
           </button>
         );
       })}

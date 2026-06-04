@@ -3,15 +3,15 @@
 import type { Genre } from "@/lib/types";
 
 const GENRES: { value: Genre; label: string }[] = [
-  { value: "comedia",        label: "Comedia 😂" },
-  { value: "drama",          label: "Drama 🎭" },
-  { value: "acción",         label: "Acción 💥" },
-  { value: "terror",         label: "Terror 👻" },
-  { value: "romance",        label: "Romance 💝" },
-  { value: "ciencia ficción",label: "Sci-Fi 🚀" },
-  { value: "animación",      label: "Animación ✨" },
-  { value: "documental",     label: "Documental 🎤" },
-  { value: "suspenso",       label: "Suspenso 🔍" },
+  { value: "comedia",         label: "Comedia 😂" },
+  { value: "drama",           label: "Drama 🎭" },
+  { value: "acción",          label: "Acción 💥" },
+  { value: "terror",          label: "Terror 👻" },
+  { value: "romance",         label: "Romance 💝" },
+  { value: "ciencia ficción", label: "Sci-Fi 🚀" },
+  { value: "animación",       label: "Animación ✨" },
+  { value: "documental",      label: "Documental 🎤" },
+  { value: "suspenso",        label: "Suspenso 🔍" },
 ];
 
 interface Props {
@@ -32,10 +32,10 @@ export function GenreChips({ value, onChange }: Props) {
         <button
           key={genre.value}
           onClick={() => toggle(genre.value)}
-          className={`px-3 py-2 rounded-full text-sm font-medium transition-all border active:scale-95 ${
+          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border active:scale-95 ${
             value.includes(genre.value)
-              ? "bg-pink-500 text-white border-pink-500"
-              : "bg-white text-gray-600 border-pink-200"
+              ? "bg-cyan-800 text-white border-cyan-800"
+              : "bg-beige-50 text-stone-700 border-beige-200 hover:border-beige-300"
           }`}
         >
           {genre.label}

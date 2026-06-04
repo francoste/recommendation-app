@@ -22,10 +22,10 @@ export function OriginSelector({ value, onChange }: Props) {
         <button
           key={orig.value}
           onClick={() => onChange(orig.value)}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-full border-2 text-sm font-medium transition-all active:scale-95 ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all active:scale-95 ${
             value === orig.value
-              ? "border-pink-400 bg-pink-50 text-pink-600"
-              : "border-pink-100 bg-white text-gray-600"
+              ? "border-cyan-700 bg-cyan-800 text-white"
+              : "border-beige-200 bg-beige-50 text-stone-700 hover:border-beige-300"
           }`}
         >
           <span>{orig.flag}</span>

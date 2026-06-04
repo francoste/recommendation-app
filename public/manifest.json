@@ -1,11 +1,11 @@
 {
-  "name": "Nuestras Películas",
-  "short_name": "PelisAmor",
-  "description": "Recomendaciones de películas para nuestra noche especial",
+  "name": "Recomendaciones de Películas",
+  "short_name": "Recomendaciones",
+  "description": "Encontrá tu próxima película favorita",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#fff0f5",
-  "theme_color": "#ec4899",
+  "background_color": "#f5ede0",
+  "theme_color": "#155e75",
   "orientation": "portrait",
   "icons": [
     {

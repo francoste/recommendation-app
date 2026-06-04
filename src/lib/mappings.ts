@@ -1,4 +1,4 @@
-import type { Genre, Mood, Duration, Origin } from "./types";
+import type { Genre, Duration, Origin } from "./types";
 
 export const GENRE_MAP: Record<Genre, number> = {
   "acción": 28,
@@ -10,15 +10,6 @@ export const GENRE_MAP: Record<Genre, number> = {
   "romance": 10749,
   "ciencia ficción": 878,
   "suspenso": 53,
-};
-
-export const MOOD_TO_GENRES: Record<Mood, number[]> = {
-  "romántico":   [10749, 18],
-  "feliz":       [35, 10751, 16],
-  "aventurero":  [28, 12, 878],
-  "relajado":    [99, 18],
-  "emocionado":  [53, 27, 28],
-  "melancólico": [18, 10749],
 };
 
 // TMDB only accepts one language per request — multi-lang origins use parallel requests

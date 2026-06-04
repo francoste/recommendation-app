@@ -1,10 +1,8 @@
 export function LoadingSpinner() {
   return (
-    <div className="flex flex-col items-center gap-4 py-16">
-      <div className="text-6xl animate-pulse">❤️</div>
-      <p className="text-pink-400 text-sm font-medium text-center">
-        Buscando la película perfecta para esta noche...
-      </p>
+    <div className="flex flex-col items-center justify-center py-20 gap-4">
+      <div className="w-8 h-8 border-2 border-beige-200 border-t-cyan-700 rounded-full animate-spin" />
+      <p className="text-stone-400 text-sm">Buscando películas... 🎬</p>
     </div>
   );
 }
