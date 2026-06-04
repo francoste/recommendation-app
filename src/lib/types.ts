@@ -12,7 +12,10 @@ export type Genre =
   | "crimen"
   | "familia"
   | "misterio"
-  | "música";
+  | "música"
+  | "reality"
+  | "western"
+  | "bélico";
 export type Duration = "corta" | "media" | "larga";
 export type Origin = "hollywood" | "europeo" | "latinoamericano" | "asiático" | "cualquiera";
 

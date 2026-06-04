@@ -1,12 +1,13 @@
 "use client";
 
 import type { Genre, ContentType } from "@/lib/types";
-import { TV_GENRE_MAP } from "@/lib/mappings";
+import { GENRE_MAP, TV_GENRE_MAP } from "@/lib/mappings";
 
 const GENRES: { value: Genre; label: string }[] = [
   { value: "acción",          label: "Acción 💥" },
   { value: "aventura",        label: "Aventura 🗺️" },
   { value: "animación",       label: "Animación ✨" },
+  { value: "bélico",          label: "Bélico 🪖" },
   { value: "ciencia ficción", label: "Sci-Fi 🚀" },
   { value: "comedia",         label: "Comedia 😂" },
   { value: "crimen",          label: "Crimen 🔫" },
@@ -15,9 +16,11 @@ const GENRES: { value: Genre; label: string }[] = [
   { value: "familia",         label: "Familia 👨‍👩‍👧" },
   { value: "misterio",        label: "Misterio 🕵️" },
   { value: "música",          label: "Música 🎵" },
+  { value: "reality",         label: "Reality 🎙️" },
   { value: "romance",         label: "Romance 💝" },
   { value: "suspenso",        label: "Suspenso 🔍" },
   { value: "terror",          label: "Terror 👻" },
+  { value: "western",         label: "Western 🤠" },
 ];
 
 interface Props {
@@ -29,7 +32,9 @@ interface Props {
 export function GenreChips({ value, onChange, contentType }: Props) {
   const visible = contentType === "serie"
     ? GENRES.filter((g) => TV_GENRE_MAP[g.value] !== null)
-    : GENRES;
+    : contentType === "pelicula"
+    ? GENRES.filter((g) => GENRE_MAP[g.value] !== null)
+    : GENRES; // "ambas" → show all
 
   function toggle(genre: Genre) {
     onChange(
