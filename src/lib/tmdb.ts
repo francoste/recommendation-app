@@ -27,7 +27,14 @@ function buildParams(prefs: QuestionnaireAnswers, langOverride?: string): URLSea
 
   if (prefs.genres.length > 0) {
     const ids = prefs.genres.map((g) => GENRE_MAP[g]).filter(Boolean);
-    if (ids.length > 0) params.set("with_genres", ids.join("|"));
+    if (ids.length > 0) {
+      if (prefs.genres.includes("animación")) {
+        // Animation is mandatory — only fetch animated movies
+        params.set("with_genres", String(GENRE_MAP["animación"]));
+      } else {
+        params.set("with_genres", ids.join("|"));
+      }
+    }
   }
 
   const { gte, lte } = getDurationRange(prefs.duration);
