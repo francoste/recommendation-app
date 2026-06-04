@@ -125,23 +125,21 @@ export default function RecommendationsPage() {
                   rent={providers?.rent ?? []}
                   loading={loadingProviders}
                 />
+                <button
+                  onClick={handleRefresh}
+                  disabled={loadingProviders}
+                  className="w-full py-4 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Otra película 🔀
+                </button>
+                <button
+                  onClick={() => router.push("/")}
+                  className="w-full py-4 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white"
+                >
+                  Nueva búsqueda 🔄
+                </button>
               </div>
             </div>
-
-            <button
-              onClick={handleRefresh}
-              disabled={loadingProviders}
-              className="w-full mt-6 py-4 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Otra película 🔀
-            </button>
-
-            <button
-              onClick={() => router.push("/")}
-              className="w-full mt-3 py-4 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white"
-            >
-              Nueva búsqueda 🔄
-            </button>
           </>
         )}
       </div>
