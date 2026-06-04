@@ -22,7 +22,7 @@ function ProviderLogo({ provider }: { provider: WatchProvider }) {
 
 export function WatchProviders({ flatrate, rent, loading }: Props) {
   return (
-    <div className="bg-beige-50 rounded-xl p-4 border border-beige-200 shadow-sm mt-4">
+    <div className="bg-beige-50 rounded-2xl p-5 border border-beige-200 shadow-md mt-0">
       <h4 className="text-xs font-semibold text-cyan-700 uppercase tracking-wide mb-3">
         Dónde verla en Argentina
       </h4>

@@ -87,7 +87,7 @@ export function QuestionnaireClient() {
 
   return (
     <main className="min-h-screen bg-beige-100 pb-28">
-      <div className="max-w-3xl mx-auto px-4 pt-8 flex flex-col gap-6">
+      <div className="max-w-3xl mx-auto px-4 pt-8 flex flex-col gap-6 animate-fade-in">
         <button
           onClick={() => router.push(backHref)}
           className="self-start flex items-center gap-1 text-sm text-stone-400 hover:text-stone-600 transition-colors"

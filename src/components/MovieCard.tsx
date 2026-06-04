@@ -1,18 +1,33 @@
 import type { RecommendedMovie } from "@/lib/types";
 
+function StarRating({ score }: { score: number }) {
+  const filled = Math.round(score / 2);
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex gap-0.5">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <span key={i} className={`text-base leading-none ${i <= filled ? "text-amber-400" : "text-stone-200"}`}>
+            ★
+          </span>
+        ))}
+      </div>
+      <span className="text-sm font-semibold text-stone-500">{score.toFixed(1)}</span>
+    </div>
+  );
+}
+
 interface Props {
   movie: RecommendedMovie;
 }
 
 export function MovieCard({ movie }: Props) {
   const year = movie.release_date?.slice(0, 4) ?? "?";
-  const rating = movie.vote_average.toFixed(1);
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : null;
 
   return (
-    <div className="bg-beige-50 rounded-xl overflow-hidden shadow-sm border border-beige-200">
+    <div className="bg-beige-50 rounded-2xl overflow-hidden shadow-md border border-beige-200">
       <div className="relative w-full" style={{ aspectRatio: "2/3" }}>
         {posterUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -26,9 +41,11 @@ export function MovieCard({ movie }: Props) {
             <span className="text-5xl">🎬</span>
           </div>
         )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
       </div>
-      <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-1">
+
+      <div className="p-5">
+        <div className="flex items-start justify-between gap-2 mb-2">
           <h3 className="font-serif text-xl text-stone-900 leading-tight">{movie.title}</h3>
           {movie.media_type === "tv" && (
             <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
@@ -36,10 +53,12 @@ export function MovieCard({ movie }: Props) {
             </span>
           )}
         </div>
-        <div className="flex items-center gap-3 mt-1 mb-3">
+
+        <div className="flex items-center gap-3 mb-3">
           <span className="text-sm text-stone-400">{year}</span>
-          <span className="text-amber-500 text-sm font-medium">★ {rating}</span>
+          <StarRating score={movie.vote_average} />
         </div>
+
         {movie.overview && (
           <p className="text-sm text-stone-600 leading-relaxed">{movie.overview}</p>
         )}

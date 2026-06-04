@@ -26,6 +26,7 @@ export default function RecommendationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [providers, setProviders] = useState<ProvidersState | null>(null);
   const [loadingProviders, setLoadingProviders] = useState(false);
+  const [spinning, setSpinning] = useState(false);
   const seenIds = useRef<Set<number>>(new Set());
 
   const fetchProviders = useCallback(async (movieId: number) => {
@@ -87,6 +88,8 @@ export default function RecommendationsPage() {
     const pool = unseen.length > 0 ? unseen : candidates.filter((m) => m.id !== currentMovie.id);
     if (pool.length === 0) return;
     if (unseen.length === 0) seenIds.current.clear();
+    setSpinning(true);
+    setTimeout(() => setSpinning(false), 400);
     selectMovie(pickRandom(pool));
   };
 
@@ -121,7 +124,7 @@ export default function RecommendationsPage() {
 
         {!loading && !error && currentMovie && (
           <>
-            <div className="flex flex-col lg:flex-row gap-6 items-start">
+            <div className="flex flex-col lg:flex-row gap-6 items-start animate-fade-in">
               <div className="w-full lg:w-1/2">
                 <MovieCard movie={currentMovie} />
               </div>
@@ -137,7 +140,8 @@ export default function RecommendationsPage() {
                   disabled={loadingProviders}
                   className="w-full py-4 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Otra película 🔀
+                  <span className={spinning ? "inline-block animate-spin-once" : "inline-block"}>🔀</span>
+                  {" "}Otra película
                 </button>
                 <button
                   onClick={() => router.push("/")}

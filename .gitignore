@@ -34,3 +34,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# AI context files (local only)
+CLAUDE.md
+CURRENT_STATE.md
+README_AI.md

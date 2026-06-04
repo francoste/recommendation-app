@@ -52,7 +52,7 @@ interface Props {
 
 export function PreferencesPanel({ person1, person2 }: Props) {
   return (
-    <div className="bg-beige-50 rounded-xl border border-beige-200 shadow-sm p-5">
+    <div className="bg-beige-50 rounded-2xl border border-beige-200 shadow-md p-5">
       <h2 className="font-serif text-lg text-stone-700 mb-4">Preferencias</h2>
       <div className="flex gap-5">
         <PersonBlock answers={person1} name={person2 ? "Persona 1" : "Tu selección"} />

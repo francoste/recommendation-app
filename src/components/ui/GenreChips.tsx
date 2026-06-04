@@ -46,7 +46,7 @@ export function GenreChips({ value, onChange, contentType }: Props) {
         <button
           key={genre.value}
           onClick={() => toggle(genre.value)}
-          className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border active:scale-95 ${
+          className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all border active:scale-95 ${
             value.includes(genre.value)
               ? "bg-cyan-800 text-white border-cyan-800"
               : "bg-beige-50 text-stone-700 border-beige-200 hover:border-beige-300"

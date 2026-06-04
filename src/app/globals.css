@@ -13,6 +13,30 @@
   .font-sans {
     font-family: var(--font-sans), system-ui, sans-serif;
   }
+
+  button:focus-visible,
+  a:focus-visible {
+    @apply outline-none ring-2 ring-cyan-700 ring-offset-2 ring-offset-beige-100;
+  }
+}
+
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.35s ease-out both;
+  }
+  .animate-spin-once {
+    animation: spinOnce 0.4s ease-out both;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spinOnce {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 /* Range slider — beige/cyan theme */
@@ -31,22 +55,27 @@
 .slider-thumb::-webkit-slider-thumb {
   -webkit-appearance: none;
   pointer-events: all;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #155e75;
   cursor: pointer;
-  border: 2px solid #0e7490;
-  box-shadow: 0 2px 6px rgba(21, 94, 117, 0.3);
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(21, 94, 117, 0.4);
+  transition: box-shadow 0.15s;
+}
+
+.slider-thumb::-webkit-slider-thumb:hover {
+  box-shadow: 0 3px 12px rgba(21, 94, 117, 0.5);
 }
 
 .slider-thumb::-moz-range-thumb {
   pointer-events: all;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #155e75;
   cursor: pointer;
-  border: 2px solid #0e7490;
-  box-shadow: 0 2px 6px rgba(21, 94, 117, 0.3);
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(21, 94, 117, 0.4);
 }
