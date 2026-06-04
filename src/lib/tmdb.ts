@@ -48,7 +48,7 @@ async function movieHasReviews(id: number): Promise<boolean> {
     const res = await fetch(`${TMDB_BASE}/movie/${id}/reviews?${params}`);
     if (!res.ok) return true;
     const data = await res.json();
-    return (data.total_results ?? 0) > 0;
+    return (data.total_results ?? 0) >= 2;
   } catch {
     return true;
   }
