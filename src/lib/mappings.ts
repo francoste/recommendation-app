@@ -17,6 +17,25 @@ export const GENRE_MAP: Record<Genre, number> = {
   "terror": 27,
 };
 
+// TV genre IDs differ from movie genre IDs for some genres
+// null = no direct equivalent in TV, genre is skipped
+export const TV_GENRE_MAP: Record<Genre, number | null> = {
+  "acción":          10759, // Action & Adventure
+  "animación":       16,
+  "aventura":        10759, // Action & Adventure
+  "ciencia ficción": 10765, // Sci-Fi & Fantasy
+  "comedia":         35,
+  "crimen":          80,
+  "documental":      99,
+  "drama":           18,
+  "familia":         10751,
+  "misterio":        9648,
+  "música":          10402,
+  "romance":         null,  // no direct TV genre
+  "suspenso":        9648,  // closest: Mystery
+  "terror":          null,  // no direct TV genre
+};
+
 // TMDB only accepts one language per request — multi-lang origins use parallel requests
 export const ORIGIN_TO_LANGUAGES: Record<Origin, string | null> = {
   "hollywood":       "en",

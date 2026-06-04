@@ -1,5 +1,5 @@
 import type { QuestionnaireAnswers, TMDBMovie, Duration, ContentType } from "./types";
-import { GENRE_MAP, ORIGIN_TO_LANGUAGES, DURATION_FILTERS } from "./mappings";
+import { GENRE_MAP, TV_GENRE_MAP, ORIGIN_TO_LANGUAGES, DURATION_FILTERS } from "./mappings";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
@@ -41,17 +41,19 @@ function buildTvParams(prefs: QuestionnaireAnswers, langOverride?: string): URLS
     "first_air_date.gte": `${prefs.yearMin}-01-01`,
     "first_air_date.lte": `${prefs.yearMax}-12-31`,
   });
-  applyGenreAndLang(params, prefs, langOverride);
+  applyGenreAndLang(params, prefs, langOverride, true);
   return params;
 }
 
-function applyGenreAndLang(params: URLSearchParams, prefs: QuestionnaireAnswers, langOverride?: string) {
+function applyGenreAndLang(params: URLSearchParams, prefs: QuestionnaireAnswers, langOverride?: string, tv = false) {
   if (prefs.genres.length > 0) {
-    const ids = prefs.genres.map((g) => GENRE_MAP[g]).filter(Boolean);
+    const map = tv ? TV_GENRE_MAP : GENRE_MAP;
+    const ids = prefs.genres.map((g) => map[g]).filter((id): id is number => id !== null && id !== undefined);
     if (ids.length > 0) {
+      const animId = tv ? TV_GENRE_MAP["animación"] : GENRE_MAP["animación"];
       params.set(
         "with_genres",
-        prefs.genres.includes("animación") ? String(GENRE_MAP["animación"]) : ids.join("|")
+        prefs.genres.includes("animación") && animId ? String(animId) : ids.join("|")
       );
     }
   }
