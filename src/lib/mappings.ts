@@ -30,7 +30,7 @@ export const TV_GENRE_MAP: Record<Genre, number | null> = {
   "drama":           18,
   "familia":         10751,
   "misterio":        9648,
-  "música":          10402,
+  "música":          null,  // no TV genre equivalent
   "romance":         null,  // no direct TV genre
   "suspenso":        9648,  // closest: Mystery
   "terror":          null,  // no direct TV genre
