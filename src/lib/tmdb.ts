@@ -51,10 +51,20 @@ async function fetchPage(baseParams: URLSearchParams, page: number): Promise<TMD
   return data.results ?? [];
 }
 
-async function fetchThreePages(prefs: QuestionnaireAnswers, lang?: string): Promise<TMDBMovie[]> {
+function randomExtraPages(count: number, min: number, max: number): number[] {
+  const pool = Array.from({ length: max - min + 1 }, (_, i) => i + min);
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count);
+}
+
+async function fetchPages(prefs: QuestionnaireAnswers, lang?: string): Promise<TMDBMovie[]> {
   const params = buildParams(prefs, lang);
-  const [p1, p2, p3] = await Promise.all([fetchPage(params, 1), fetchPage(params, 2), fetchPage(params, 3)]);
-  return [...p1, ...p2, ...p3];
+  const extraPages = randomExtraPages(2, 2, 8);
+  const pages = await Promise.all([1, ...extraPages].map((p) => fetchPage(params, p)));
+  return pages.flat();
 }
 
 export async function fetchMovieCandidates(prefs: QuestionnaireAnswers): Promise<TMDBMovie[]> {
@@ -63,7 +73,7 @@ export async function fetchMovieCandidates(prefs: QuestionnaireAnswers): Promise
   let results: TMDBMovie[];
 
   if (!lang || !lang.includes("|")) {
-    results = await fetchThreePages(prefs, lang ?? undefined);
+    results = await fetchPages(prefs, lang ?? undefined);
     if (results.length < 10) {
       // Retry without runtime filter when few results (runtime often null in TMDB)
       const relaxed = buildParams({ ...prefs }, lang ?? undefined);
@@ -74,7 +84,7 @@ export async function fetchMovieCandidates(prefs: QuestionnaireAnswers): Promise
     }
   } else {
     const languages = lang.split("|");
-    const all = await Promise.all(languages.map((l) => fetchThreePages(prefs, l)));
+    const all = await Promise.all(languages.map((l) => fetchPages(prefs, l)));
     const seen = new Set<number>();
     results = all
       .flat()
