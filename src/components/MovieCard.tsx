@@ -28,7 +28,7 @@ export function MovieCard({ movie }: Props) {
 
   return (
     <div className="bg-beige-50 rounded-2xl overflow-hidden shadow-md border border-beige-200">
-      <div className="relative w-full" style={{ aspectRatio: "2/3" }}>
+      <div className="relative w-full aspect-[2/3] lg:aspect-[3/4]">
         {posterUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
