@@ -94,7 +94,7 @@ export default function RecommendationsPage() {
 
   return (
     <main className="min-h-screen bg-beige-100 pb-16">
-      <div className={`mx-auto px-4 pt-8 ${isPareja ? "max-w-4xl" : "max-w-sm"}`}>
+      <div className="mx-auto px-4 pt-8 max-w-4xl">
         <h1 className="font-serif text-3xl text-stone-900 text-center mb-1">Tu recomendación 🎬</h1>
         <p className="text-center text-stone-400 text-sm mb-8">Basada en tus preferencias</p>
 
@@ -114,31 +114,19 @@ export default function RecommendationsPage() {
 
         {!loading && !error && currentMovie && (
           <>
-            {isPareja ? (
-              <div className="flex flex-col lg:flex-row gap-6 items-start">
-                <div className="w-full lg:w-1/2">
-                  <MovieCard movie={currentMovie} />
-                </div>
-                <div className="w-full lg:w-1/2 flex flex-col gap-4">
-                  <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
-                  <WatchProviders
-                    flatrate={providers?.flatrate ?? []}
-                    rent={providers?.rent ?? []}
-                    loading={loadingProviders}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4">
+            <div className="flex flex-col lg:flex-row gap-6 items-start">
+              <div className="w-full lg:w-1/2">
                 <MovieCard movie={currentMovie} />
-                <PreferencesPanel person1={prefs!.person1} />
+              </div>
+              <div className="w-full lg:w-1/2 flex flex-col gap-4">
+                <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
                 <WatchProviders
                   flatrate={providers?.flatrate ?? []}
                   rent={providers?.rent ?? []}
                   loading={loadingProviders}
                 />
               </div>
-            )}
+            </div>
 
             <button
               onClick={handleRefresh}
