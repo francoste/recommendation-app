@@ -7,7 +7,12 @@ export type Genre =
   | "ciencia ficción"
   | "animación"
   | "documental"
-  | "suspenso";
+  | "suspenso"
+  | "aventura"
+  | "crimen"
+  | "familia"
+  | "misterio"
+  | "música";
 export type Duration = "corta" | "media" | "larga";
 export type Origin = "hollywood" | "europeo" | "latinoamericano" | "asiático" | "cualquiera";
 

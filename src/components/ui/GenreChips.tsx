@@ -3,15 +3,20 @@
 import type { Genre } from "@/lib/types";
 
 const GENRES: { value: Genre; label: string }[] = [
-  { value: "comedia",         label: "Comedia 😂" },
-  { value: "drama",           label: "Drama 🎭" },
   { value: "acción",          label: "Acción 💥" },
-  { value: "terror",          label: "Terror 👻" },
-  { value: "romance",         label: "Romance 💝" },
-  { value: "ciencia ficción", label: "Sci-Fi 🚀" },
+  { value: "aventura",        label: "Aventura 🗺️" },
   { value: "animación",       label: "Animación ✨" },
+  { value: "ciencia ficción", label: "Sci-Fi 🚀" },
+  { value: "comedia",         label: "Comedia 😂" },
+  { value: "crimen",          label: "Crimen 🔫" },
   { value: "documental",      label: "Documental 🎤" },
+  { value: "drama",           label: "Drama 🎭" },
+  { value: "familia",         label: "Familia 👨‍👩‍👧" },
+  { value: "misterio",        label: "Misterio 🕵️" },
+  { value: "música",          label: "Música 🎵" },
+  { value: "romance",         label: "Romance 💝" },
   { value: "suspenso",        label: "Suspenso 🔍" },
+  { value: "terror",          label: "Terror 👻" },
 ];
 
 interface Props {
