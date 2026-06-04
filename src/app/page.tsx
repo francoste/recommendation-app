@@ -5,8 +5,8 @@ import Link from "next/link";
 import type { ContentType } from "@/lib/types";
 
 const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
-  { value: "pelicula", label: "Película" },
-  { value: "serie",    label: "Serie" },
+  { value: "pelicula", label: "Películas" },
+  { value: "serie",    label: "Series" },
   { value: "ambas",    label: "Ambas" },
 ];
 
