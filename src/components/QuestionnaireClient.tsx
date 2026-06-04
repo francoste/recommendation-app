@@ -79,9 +79,21 @@ export function QuestionnaireClient() {
       ? "Tus preferencias 🎭"
       : "¿Y la otra persona? 👤";
 
+  const backHref =
+    mode === "pareja" && person === 2
+      ? "/questionnaire?mode=pareja&person=1"
+      : "/";
+
   return (
     <main className="min-h-screen bg-beige-100 pb-28">
       <div className="max-w-sm mx-auto px-4 pt-8 flex flex-col gap-7">
+        <button
+          onClick={() => router.push(backHref)}
+          className="self-start flex items-center gap-1 text-sm text-stone-400 hover:text-stone-600 transition-colors"
+        >
+          ← Volver
+        </button>
+
         {mode === "pareja" && <ProgressStepper step={person} />}
 
         <h1 className="font-serif text-2xl text-stone-900 text-center">{title}</h1>
