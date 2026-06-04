@@ -86,7 +86,7 @@ export function QuestionnaireClient() {
 
   return (
     <main className="min-h-screen bg-beige-100 pb-28">
-      <div className="max-w-sm mx-auto px-4 pt-8 flex flex-col gap-7">
+      <div className="max-w-3xl mx-auto px-4 pt-8 flex flex-col gap-6">
         <button
           onClick={() => router.push(backHref)}
           className="self-start flex items-center gap-1 text-sm text-stone-400 hover:text-stone-600 transition-colors"
@@ -98,38 +98,40 @@ export function QuestionnaireClient() {
 
         <h1 className="font-serif text-2xl text-stone-900 text-center">{title}</h1>
 
-        <section>
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
-            Género
-          </h2>
-          <GenreChips value={genres} onChange={setGenres} />
-        </section>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section>
+            <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
+              Género
+            </h2>
+            <GenreChips value={genres} onChange={setGenres} />
+          </section>
 
-        <section>
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
-            Época — {yearMin} a {yearMax}
-          </h2>
-          <YearRangeSlider
-            min={yearMin}
-            max={yearMax}
-            onMinChange={setYearMin}
-            onMaxChange={setYearMax}
-          />
-        </section>
+          <section>
+            <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
+              Época — {yearMin} a {yearMax}
+            </h2>
+            <YearRangeSlider
+              min={yearMin}
+              max={yearMax}
+              onMinChange={setYearMin}
+              onMaxChange={setYearMax}
+            />
+          </section>
 
-        <section>
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
-            Duración
-          </h2>
-          <DurationToggle value={duration} onChange={setDuration} />
-        </section>
+          <section>
+            <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
+              Duración
+            </h2>
+            <DurationToggle value={duration} onChange={setDuration} />
+          </section>
 
-        <section>
-          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
-            Origen
-          </h2>
-          <OriginSelector value={origin} onChange={setOrigin} />
-        </section>
+          <section>
+            <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
+              Origen
+            </h2>
+            <OriginSelector value={origin} onChange={setOrigin} />
+          </section>
+        </div>
 
         <button
           onClick={handleSubmit}
