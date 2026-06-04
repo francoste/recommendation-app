@@ -9,9 +9,12 @@ const ORIGIN_LABELS: Record<Origin, { flag: string; label: string }> = {
 };
 
 const DURATION_LABELS: Record<Duration, string> = {
-  "corta": "< 90 min",
-  "media": "90–120 min",
-  "larga": "> 120 min",
+  "corta":      "< 90 min",
+  "media":      "90–120 min",
+  "larga":      "> 120 min",
+  "mini-serie": "1–10 caps",
+  "serie":      "+ 10 caps",
+  "telenovela": "+ 100 caps",
 };
 
 function PersonBlock({ answers, name }: { answers: QuestionnaireAnswers; name: string }) {

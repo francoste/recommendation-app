@@ -123,7 +123,7 @@ export function QuestionnaireClient() {
             <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
               Duración
             </h2>
-            <DurationToggle value={duration} onChange={setDuration} />
+            <DurationToggle value={duration} onChange={setDuration} contentType={contentType} />
           </section>
 
           <section>

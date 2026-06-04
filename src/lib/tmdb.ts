@@ -1,17 +1,29 @@
 import type { QuestionnaireAnswers, TMDBMovie, Duration, ContentType } from "./types";
-import { GENRE_MAP, TV_GENRE_MAP, ORIGIN_TO_LANGUAGES, DURATION_FILTERS } from "./mappings";
+import { GENRE_MAP, TV_GENRE_MAP, ORIGIN_TO_LANGUAGES, DURATION_FILTERS, TV_DURATION_TYPE } from "./mappings";
 
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
+const MOVIE_DURATIONS = ["corta", "media", "larga"] as const;
+const TV_DURATIONS    = ["mini-serie", "serie", "telenovela"] as const;
+
 function getDurationRange(durations: Duration[]): { gte?: number; lte?: number } {
-  if (durations.length === 0 || durations.length === 3) return {};
-  const filters = durations.map((d) => DURATION_FILTERS[d]);
+  const movie = durations.filter((d): d is typeof MOVIE_DURATIONS[number] => (MOVIE_DURATIONS as readonly string[]).includes(d));
+  if (movie.length === 0 || movie.length === 3) return {};
+  const filters = movie.map((d) => DURATION_FILTERS[d]);
   const minGte = Math.min(...filters.map((f) => f.gte ?? 0));
   const maxLte = Math.max(...filters.map((f) => f.lte ?? Infinity));
   return {
     gte: minGte > 0 ? minGte : undefined,
     lte: maxLte < Infinity ? maxLte : undefined,
   };
+}
+
+function getTvTypeFilter(durations: Duration[]): { with_type?: string; "with_episode_count.gte"?: string } {
+  const tv = durations.filter((d): d is typeof TV_DURATIONS[number] => (TV_DURATIONS as readonly string[]).includes(d));
+  if (tv.length === 0 || tv.length === 3) return {};
+  if (tv.length === 1 && tv[0] === "telenovela") return { "with_episode_count.gte": "100" };
+  const types = tv.filter((d) => d !== "telenovela").map((d) => TV_DURATION_TYPE[d]).filter(Boolean);
+  return types.length > 0 ? { with_type: types.join("|") } : {};
 }
 
 function buildMovieParams(prefs: QuestionnaireAnswers, langOverride?: string): URLSearchParams {
@@ -42,6 +54,9 @@ function buildTvParams(prefs: QuestionnaireAnswers, langOverride?: string): URLS
     "first_air_date.lte": `${prefs.yearMax}-12-31`,
   });
   applyGenreAndLang(params, prefs, langOverride, true);
+  const tvFilter = getTvTypeFilter(prefs.duration);
+  if (tvFilter.with_type) params.set("with_type", tvFilter.with_type);
+  if (tvFilter["with_episode_count.gte"]) params.set("with_episode_count.gte", tvFilter["with_episode_count.gte"]);
   return params;
 }
 

@@ -51,7 +51,16 @@ export const ORIGIN_TO_LANGUAGES: Record<Origin, string | null> = {
 };
 
 export const DURATION_FILTERS: Record<Duration, { gte?: number; lte?: number }> = {
-  "corta": { lte: 90 },
-  "media": { gte: 90, lte: 120 },
-  "larga": { gte: 120 },
+  "corta":      { lte: 90 },
+  "media":      { gte: 90, lte: 120 },
+  "larga":      { gte: 120 },
+  "mini-serie": {},
+  "serie":      {},
+  "telenovela": {},
+};
+
+// TMDB with_type values for TV show format
+export const TV_DURATION_TYPE: Record<string, string> = {
+  "mini-serie": "2", // Miniseries
+  "serie":      "4", // Scripted
 };

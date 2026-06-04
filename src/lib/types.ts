@@ -16,7 +16,7 @@ export type Genre =
   | "reality"
   | "western"
   | "bélico";
-export type Duration = "corta" | "media" | "larga";
+export type Duration = "corta" | "media" | "larga" | "mini-serie" | "serie" | "telenovela";
 export type Origin = "hollywood" | "europeo" | "latinoamericano" | "asiático" | "cualquiera";
 
 export interface QuestionnaireAnswers {

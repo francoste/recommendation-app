@@ -1,30 +1,39 @@
 "use client";
 
-import type { Duration } from "@/lib/types";
+import type { Duration, ContentType } from "@/lib/types";
 
-const OPTIONS: { value: Duration; label: string; sub: string }[] = [
-  { value: "corta", label: "Corta",  sub: "< 90 min" },
-  { value: "media", label: "Media",  sub: "90–120 min" },
-  { value: "larga", label: "Larga",  sub: "> 120 min" },
+const MOVIE_OPTIONS: { value: Duration; label: string; sub: string }[] = [
+  { value: "corta",  label: "Corta",  sub: "< 90 min" },
+  { value: "media",  label: "Media",  sub: "90–120 min" },
+  { value: "larga",  label: "Larga",  sub: "> 120 min" },
+];
+
+const TV_OPTIONS: { value: Duration; label: string; sub: string }[] = [
+  { value: "mini-serie", label: "Mini-serie",  sub: "1–10 caps" },
+  { value: "serie",      label: "Serie",       sub: "+ de 10 caps" },
+  { value: "telenovela", label: "Telenovela",  sub: "+ de 100 caps" },
 ];
 
 interface Props {
   value: Duration[];
   onChange: (d: Duration[]) => void;
+  contentType?: ContentType;
 }
 
-export function DurationToggle({ value, onChange }: Props) {
+export function DurationToggle({ value, onChange, contentType }: Props) {
+  const options = contentType === "serie"
+    ? TV_OPTIONS
+    : contentType === "ambas"
+    ? [...MOVIE_OPTIONS, ...TV_OPTIONS]
+    : MOVIE_OPTIONS;
+
   function toggle(d: Duration) {
-    if (value.includes(d)) {
-      onChange(value.filter((v) => v !== d));
-    } else {
-      onChange([...value, d]);
-    }
+    onChange(value.includes(d) ? value.filter((v) => v !== d) : [...value, d]);
   }
 
   return (
     <div className="flex gap-2">
-      {OPTIONS.map((opt) => {
+      {options.map((opt) => {
         const selected = value.includes(opt.value);
         return (
           <button
