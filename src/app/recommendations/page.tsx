@@ -159,27 +159,29 @@ export default function RecommendationsPage() {
               </div>
 
               {/* Col 3 — Panel lateral */}
-              <div className="w-full lg:w-1/3 flex flex-col gap-4">
+              <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:sticky lg:top-8">
                 <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
                 <WatchProviders
                   flatrate={providers?.flatrate ?? []}
                   rent={providers?.rent ?? []}
                   loading={loadingProviders}
                 />
-                <button
-                  onClick={handleRefresh}
-                  disabled={loadingProviders}
-                  className="w-full py-4 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span className={spinning ? "inline-block animate-spin-once" : "inline-block"}>🔀</span>
-                  {" "}Otra película
-                </button>
-                <button
-                  onClick={() => router.push("/")}
-                  className="w-full py-4 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white"
-                >
-                  Nueva búsqueda 🔄
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleRefresh}
+                    disabled={loadingProviders}
+                    className="flex-1 py-3 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                  >
+                    <span className={spinning ? "inline-block animate-spin-once" : "inline-block"}>🔀</span>
+                    {" "}Otra
+                  </button>
+                  <button
+                    onClick={() => router.push("/")}
+                    className="flex-1 py-3 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white text-sm"
+                  >
+                    Nueva búsqueda
+                  </button>
+                </div>
               </div>
 
             </div>
