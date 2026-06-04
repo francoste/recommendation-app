@@ -1,6 +1,6 @@
 import type { RecommendedMovie } from "@/lib/types";
 
-function StarRating({ score }: { score: number }) {
+export function StarRating({ score }: { score: number }) {
   const filled = Math.round(score / 2);
   return (
     <div className="flex items-center gap-1.5">
@@ -18,17 +18,17 @@ function StarRating({ score }: { score: number }) {
 
 interface Props {
   movie: RecommendedMovie;
+  posterOnly?: boolean;
 }
 
-export function MovieCard({ movie }: Props) {
-  const year = movie.release_date?.slice(0, 4) ?? "?";
+export function MovieCard({ movie, posterOnly }: Props) {
   const posterUrl = movie.poster_path
     ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
     : null;
 
   return (
     <div className="bg-beige-50 rounded-2xl overflow-hidden shadow-md border border-beige-200">
-      <div className="relative w-full aspect-[2/3] lg:aspect-[3/4]">
+      <div className="relative w-full aspect-[2/3]">
         {posterUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -44,25 +44,25 @@ export function MovieCard({ movie }: Props) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
       </div>
 
-      <div className="p-5">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-serif text-xl text-stone-900 leading-tight">{movie.title}</h3>
-          {movie.media_type === "tv" && (
-            <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
-              Serie
-            </span>
+      {!posterOnly && (
+        <div className="p-5">
+          <div className="flex items-start justify-between gap-2 mb-2">
+            <h3 className="font-serif text-xl text-stone-900 leading-tight">{movie.title}</h3>
+            {movie.media_type === "tv" && (
+              <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
+                Serie
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-sm text-stone-400">{movie.release_date?.slice(0, 4) ?? "?"}</span>
+            <StarRating score={movie.vote_average} />
+          </div>
+          {movie.overview && (
+            <p className="text-sm text-stone-600 leading-relaxed">{movie.overview}</p>
           )}
         </div>
-
-        <div className="flex items-center gap-3 mb-3">
-          <span className="text-sm text-stone-400">{year}</span>
-          <StarRating score={movie.vote_average} />
-        </div>
-
-        {movie.overview && (
-          <p className="text-sm text-stone-600 leading-relaxed">{movie.overview}</p>
-        )}
-      </div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MovieCard } from "@/components/MovieCard";
+import { MovieCard, StarRating } from "@/components/MovieCard";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { PreferencesPanel } from "@/components/PreferencesPanel";
 import { WatchProviders } from "@/components/WatchProviders";
@@ -97,7 +97,7 @@ export default function RecommendationsPage() {
 
   return (
     <main className="min-h-screen bg-beige-100 pb-16">
-      <div className="mx-auto px-4 pt-8 max-w-4xl">
+      <div className="mx-auto px-4 pt-8 max-w-6xl">
         <button
           onClick={() => router.back()}
           className="self-start flex items-center gap-1 text-sm text-stone-400 hover:text-stone-600 transition-colors mb-4"
@@ -125,10 +125,41 @@ export default function RecommendationsPage() {
         {!loading && !error && currentMovie && (
           <>
             <div className="flex flex-col lg:flex-row gap-6 items-start animate-fade-in">
-              <div className="w-full lg:w-1/2">
-                <MovieCard movie={currentMovie} />
+
+              {/* Col 1 — Poster */}
+              <div className="w-full lg:w-1/4">
+                <MovieCard movie={currentMovie} posterOnly />
               </div>
-              <div className="w-full lg:w-1/2 flex flex-col gap-4">
+
+              {/* Col 2 — Título, rating y descripción */}
+              <div className="w-full lg:w-5/12 flex flex-col gap-4">
+                <div className="bg-beige-50 rounded-2xl border border-beige-200 shadow-md p-5 flex flex-col gap-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <h2 className="font-serif text-2xl text-stone-900 leading-tight">
+                      {currentMovie.title}
+                    </h2>
+                    {currentMovie.media_type === "tv" && (
+                      <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
+                        Serie
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-stone-400">
+                      {currentMovie.release_date?.slice(0, 4) ?? "?"}
+                    </span>
+                    <StarRating score={currentMovie.vote_average} />
+                  </div>
+                  {currentMovie.overview && (
+                    <p className="text-sm text-stone-600 leading-relaxed">
+                      {currentMovie.overview}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Col 3 — Panel lateral */}
+              <div className="w-full lg:w-1/3 flex flex-col gap-4">
                 <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
                 <WatchProviders
                   flatrate={providers?.flatrate ?? []}
@@ -150,6 +181,7 @@ export default function RecommendationsPage() {
                   Nueva búsqueda 🔄
                 </button>
               </div>
+
             </div>
           </>
         )}
