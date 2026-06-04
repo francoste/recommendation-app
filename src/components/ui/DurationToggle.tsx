@@ -21,35 +21,42 @@ interface Props {
 }
 
 export function DurationToggle({ value, onChange, contentType }: Props) {
-  const options = contentType === "serie"
-    ? TV_OPTIONS
-    : contentType === "ambas"
-    ? [...MOVIE_OPTIONS, ...TV_OPTIONS]
-    : MOVIE_OPTIONS;
-
   function toggle(d: Duration) {
     onChange(value.includes(d) ? value.filter((v) => v !== d) : [...value, d]);
   }
 
-  return (
-    <div className="flex gap-2">
-      {options.map((opt) => {
-        const selected = value.includes(opt.value);
-        return (
-          <button
-            key={opt.value}
-            onClick={() => toggle(opt.value)}
-            className={`flex-1 py-3 rounded-xl border text-center transition-all active:scale-95 ${
-              selected
-                ? "border-cyan-700 bg-cyan-800 text-white"
-                : "border-beige-200 bg-beige-50 text-stone-700 hover:border-beige-300"
-            }`}
-          >
-            <div className="text-sm font-semibold">{opt.label}</div>
-            <div className={`text-xs mt-0.5 ${selected ? "text-cyan-100" : "text-stone-400"}`}>{opt.sub}</div>
-          </button>
-        );
-      })}
-    </div>
-  );
+  function Row({ options }: { options: typeof MOVIE_OPTIONS }) {
+    return (
+      <div className="flex gap-2">
+        {options.map((opt) => {
+          const selected = value.includes(opt.value);
+          return (
+            <button
+              key={opt.value}
+              onClick={() => toggle(opt.value)}
+              className={`flex-1 py-3 rounded-xl border text-center transition-all active:scale-95 ${
+                selected
+                  ? "border-cyan-700 bg-cyan-800 text-white"
+                  : "border-beige-200 bg-beige-50 text-stone-700 hover:border-beige-300"
+              }`}
+            >
+              <div className="text-sm font-semibold">{opt.label}</div>
+              <div className={`text-xs mt-0.5 ${selected ? "text-cyan-100" : "text-stone-400"}`}>{opt.sub}</div>
+            </button>
+          );
+        })}
+      </div>
+    );
+  }
+
+  if (contentType === "ambas") {
+    return (
+      <div className="flex flex-col gap-2">
+        <Row options={MOVIE_OPTIONS} />
+        <Row options={TV_OPTIONS} />
+      </div>
+    );
+  }
+
+  return <Row options={contentType === "serie" ? TV_OPTIONS : MOVIE_OPTIONS} />;
 }
