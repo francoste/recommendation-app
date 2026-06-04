@@ -4,7 +4,13 @@ import type { Preferences } from "@/lib/types";
 
 export async function POST(req: NextRequest) {
   try {
-    const prefs: Preferences = await req.json();
+    const body = await req.json();
+    if (!body || typeof body !== "object" || !body.person1 ||
+        (body.mode !== "solo" && body.mode !== "pareja") ||
+        (body.mode === "pareja" && !body.person2)) {
+      return NextResponse.json({ error: "Solicitud inválida." }, { status: 400 });
+    }
+    const prefs = body as Preferences;
 
     let candidates;
     if (prefs.mode === "solo") {

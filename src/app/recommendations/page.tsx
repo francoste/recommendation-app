@@ -21,7 +21,13 @@ export default function RecommendationsPage() {
       return;
     }
 
-    const parsed: Preferences = JSON.parse(raw);
+    let parsed: Preferences;
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      router.push("/");
+      return;
+    }
     setPrefs(parsed);
 
     fetch("/api/recommendations", {

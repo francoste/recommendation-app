@@ -52,7 +52,17 @@ export function QuestionnaireClient() {
     let prefs: Preferences;
     if (mode === "pareja") {
       const raw = sessionStorage.getItem("person1Answers");
-      const p1: QuestionnaireAnswers = raw ? JSON.parse(raw) : answers;
+      if (!raw) {
+        router.push("/questionnaire?mode=pareja&person=1");
+        return;
+      }
+      let p1: QuestionnaireAnswers;
+      try {
+        p1 = JSON.parse(raw);
+      } catch {
+        router.push("/questionnaire?mode=pareja&person=1");
+        return;
+      }
       prefs = { mode: "pareja", person1: p1, person2: answers };
     } else {
       prefs = { mode: "solo", person1: answers };

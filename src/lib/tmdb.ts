@@ -46,7 +46,7 @@ async function fetchPage(baseParams: URLSearchParams, page: number): Promise<TMD
   const params = new URLSearchParams(baseParams);
   params.set("page", String(page));
   const res = await fetch(`${TMDB_BASE}/discover/movie?${params}`);
-  if (!res.ok) return [];
+  if (!res.ok) throw new Error(`TMDB error ${res.status}`);
   const data = await res.json();
   return data.results ?? [];
 }
