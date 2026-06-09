@@ -15,21 +15,25 @@ const PROVIDER_URLS: Record<number, string> = {
   337:  "https://www.disneyplus.com",
   384:  "https://www.max.com",
   1825: "https://www.max.com",
-  619:  "https://www.disneyplus.com",   // Star+ migró a Disney+ en LatAm
+  619:  "https://www.disneyplus.com",
   350:  "https://tv.apple.com",
+  2:    "https://tv.apple.com",          // Apple TV Store (rent/buy)
   531:  "https://www.paramountplus.com",
   11:   "https://mubi.com",
   283:  "https://www.crunchyroll.com",
   300:  "https://pluto.tv",
-  3:    "https://play.google.com/store/movies",
+  3:    "https://movies.google.com",     // Google Play Movies
   192:  "https://www.youtube.com",
   188:  "https://www.youtube.com/premium",
   // Argentina
   167:  "https://www.clarovideo.com",
   339:  "https://www.flow.com.ar",
-  149:  "https://movistartv.com.ar",
+  149:  "https://play.movistar.com.ar",  // Movistar Play AR
   202:  "https://www.directvgo.com",
 };
+
+// Canales add-on que no son plataformas propias (ej. "Paramount+ Amazon Channel")
+const ADDON_CHANNEL = /(Amazon|Apple TV)\s+Channel/i;
 
 function ProviderLogo({ provider }: { provider: WatchProvider }) {
   const url = PROVIDER_URLS[provider.id];
@@ -58,6 +62,9 @@ function ProviderLogo({ provider }: { provider: WatchProvider }) {
 }
 
 export function WatchProviders({ flatrate, rent, loading }: Props) {
+  const flatrateFiltered = flatrate.filter((p) => !ADDON_CHANNEL.test(p.name));
+  const rentFiltered = rent.filter((p) => !ADDON_CHANNEL.test(p.name));
+
   return (
     <div className="bg-beige-50 rounded-2xl p-5 border border-beige-200 shadow-md mt-0">
       <h4 className="text-xs font-semibold text-cyan-700 uppercase tracking-wide mb-3">
@@ -75,29 +82,29 @@ export function WatchProviders({ flatrate, rent, loading }: Props) {
         </div>
       )}
 
-      {!loading && flatrate.length > 0 && (
+      {!loading && flatrateFiltered.length > 0 && (
         <>
           <p className="text-xs text-stone-400 mb-2">Incluida en tu suscripción</p>
           <div className="flex flex-wrap gap-3">
-            {flatrate.map((p) => (
+            {flatrateFiltered.map((p) => (
               <ProviderLogo key={p.id} provider={p} />
             ))}
           </div>
         </>
       )}
 
-      {!loading && flatrate.length === 0 && rent.length > 0 && (
+      {!loading && flatrateFiltered.length === 0 && rentFiltered.length > 0 && (
         <>
           <p className="text-xs text-stone-400 mb-2">Disponible para alquilar</p>
           <div className="flex flex-wrap gap-3">
-            {rent.map((p) => (
+            {rentFiltered.map((p) => (
               <ProviderLogo key={p.id} provider={p} />
             ))}
           </div>
         </>
       )}
 
-      {!loading && flatrate.length === 0 && rent.length === 0 && (
+      {!loading && flatrateFiltered.length === 0 && rentFiltered.length === 0 && (
         <p className="text-sm text-stone-400">No encontramos disponibilidad en Argentina.</p>
       )}
     </div>
