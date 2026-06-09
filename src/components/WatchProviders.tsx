@@ -7,54 +7,54 @@ interface Props {
 }
 
 const PROVIDER_URLS: Record<number, string> = {
+  // Global
   8:    "https://www.netflix.com",
-  9:    "https://www.amazon.com/prime-video",
-  10:   "https://www.amazon.com/prime-video",
+  9:    "https://www.primevideo.com",
+  10:   "https://www.primevideo.com",
   119:  "https://www.primevideo.com",
   337:  "https://www.disneyplus.com",
   384:  "https://www.max.com",
   1825: "https://www.max.com",
-  619:  "https://www.starplus.com",
+  619:  "https://www.disneyplus.com",   // Star+ migró a Disney+ en LatAm
   350:  "https://tv.apple.com",
   531:  "https://www.paramountplus.com",
   11:   "https://mubi.com",
   283:  "https://www.crunchyroll.com",
-  167:  "https://www.clarovideo.com",
   300:  "https://pluto.tv",
-  386:  "https://www.peacocktv.com",
   3:    "https://play.google.com/store/movies",
+  192:  "https://www.youtube.com",
   188:  "https://www.youtube.com/premium",
+  // Argentina
+  167:  "https://www.clarovideo.com",
+  339:  "https://www.flow.com.ar",
+  149:  "https://movistartv.com.ar",
+  202:  "https://www.directvgo.com",
 };
 
 function ProviderLogo({ provider }: { provider: WatchProvider }) {
   const url = PROVIDER_URLS[provider.id];
-  const inner = (
-    <>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
-        alt={provider.name}
-        className="w-12 h-12 rounded-lg object-cover border border-beige-200 transition-transform hover:scale-110"
-      />
-      <span className="text-xs text-stone-500 text-center leading-tight">{provider.name}</span>
-    </>
+
+  const logo = (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
+      alt={provider.name}
+      className="w-12 h-12 rounded-lg object-cover border border-beige-200 transition-transform hover:scale-110"
+    />
   );
 
-  if (url) {
-    return (
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex flex-col items-center gap-1 w-16"
-        title={`Ir a ${provider.name}`}
-      >
-        {inner}
-      </a>
-    );
-  }
-
-  return <div className="flex flex-col items-center gap-1 w-16">{inner}</div>;
+  return (
+    <div className="flex flex-col items-center gap-1 w-16">
+      {url ? (
+        <a href={url} target="_blank" rel="noopener noreferrer" title={`Ir a ${provider.name}`}>
+          {logo}
+        </a>
+      ) : (
+        logo
+      )}
+      <span className="text-xs text-stone-500 text-center leading-tight">{provider.name}</span>
+    </div>
+  );
 }
 
 export function WatchProviders({ flatrate, rent, loading }: Props) {
