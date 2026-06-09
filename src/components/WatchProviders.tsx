@@ -13,7 +13,7 @@ const PROVIDER_URLS: Record<number, string> = {
   10:   "https://www.primevideo.com",
   119:  "https://www.primevideo.com",
   337:  "https://www.disneyplus.com",
-  384:  "https://www.max.com",
+  384:  "https://play.hbomax.com",
   1825: "https://www.max.com",
   619:  "https://www.disneyplus.com",
   350:  "https://tv.apple.com",
@@ -28,7 +28,7 @@ const PROVIDER_URLS: Record<number, string> = {
   // Argentina
   167:  "https://www.clarovideo.com",
   339:  "https://www.flow.com.ar",
-  149:  "https://play.movistar.com.ar",  // Movistar Play AR
+  149:  "https://tv.movistar.com.ar",
   202:  "https://www.directvgo.com",
 };
 
