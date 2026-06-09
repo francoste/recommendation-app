@@ -41,7 +41,7 @@ export default function PosterCarousel() {
                 <img
                   src={`https://image.tmdb.org/t/p/w200${poster.poster_path}`}
                   alt={poster.title}
-                  loading="lazy"
+                  loading="eager"
                   decoding="async"
                   className="w-full h-full object-cover"
                 />
