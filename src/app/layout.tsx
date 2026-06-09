@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Lora, Inter, Bebas_Neue } from "next/font/google";
 import "./globals.css";
+import { InstallButton } from "@/components/InstallButton";
 
 const lora = Lora({
   subsets: ["latin"],
@@ -36,7 +37,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="es" className={`${lora.variable} ${inter.variable} ${bebasNeue.variable}`}>
-      <body className="font-sans antialiased bg-beige-100 text-stone-900">{children}</body>
+      <body className="font-sans antialiased bg-beige-100 text-stone-900">
+        <InstallButton />
+        {children}
+      </body>
     </html>
   );
 }
