@@ -25,13 +25,15 @@ function mapProvider(p: TMDBProvider): WatchProvider {
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");
+  const mediaType = req.nextUrl.searchParams.get("type") === "tv" ? "tv" : "movie";
+
   if (!id || !/^\d+$/.test(id)) {
     return NextResponse.json({ error: "ID inválido." }, { status: 400 });
   }
 
   try {
     const res = await fetch(
-      `${TMDB_BASE}/movie/${id}/watch/providers?api_key=${process.env.TMDB_API_KEY}`
+      `${TMDB_BASE}/${mediaType}/${id}/watch/providers?api_key=${process.env.TMDB_API_KEY}`
     );
     if (!res.ok) throw new Error(`TMDB error ${res.status}`);
 

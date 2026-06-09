@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { ContentType } from "@/lib/types";
-import PosterCarousel from "@/components/PosterCarousel";
+
+const PosterCarousel = dynamic(() => import("@/components/PosterCarousel"), { ssr: false });
 
 const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
   { value: "pelicula", label: "Películas" },

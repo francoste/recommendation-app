@@ -46,6 +46,7 @@ export function GenreChips({ value, onChange, contentType }: Props) {
         <button
           key={genre.value}
           onClick={() => toggle(genre.value)}
+          aria-pressed={value.includes(genre.value)}
           className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all border active:scale-95 ${
             value.includes(genre.value)
               ? "bg-cyan-800 text-white border-cyan-800"

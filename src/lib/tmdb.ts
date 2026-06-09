@@ -1,6 +1,30 @@
 import type { QuestionnaireAnswers, TMDBMovie, Duration, ContentType } from "./types";
 import { GENRE_MAP, TV_GENRE_MAP, ORIGIN_TO_LANGUAGES, DURATION_FILTERS, TV_DURATION_TYPE } from "./mappings";
 
+interface RawTMDBBase {
+  id: number;
+  overview: string;
+  poster_path: string | null;
+  vote_average: number;
+  genre_ids: number[];
+}
+
+interface RawTMDBMovie extends RawTMDBBase {
+  title: string;
+  original_title: string;
+  release_date: string;
+  runtime?: number;
+}
+
+interface RawTMDBTvShow extends RawTMDBBase {
+  name?: string;
+  original_name?: string;
+  first_air_date?: string;
+  title?: string;
+  original_title?: string;
+  release_date?: string;
+}
+
 const TMDB_BASE = "https://api.themoviedb.org/3";
 
 const MOVIE_DURATIONS = ["corta", "media", "larga"] as const;
@@ -76,23 +100,21 @@ function applyGenreAndLang(params: URLSearchParams, prefs: QuestionnaireAnswers,
   if (lang && !lang.includes("|")) params.set("with_original_language", lang);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizeTv(raw: any): TMDBMovie {
+function normalizeTv(raw: RawTMDBTvShow): TMDBMovie {
   return {
     id: raw.id,
-    title: raw.name ?? raw.title,
-    original_title: raw.original_name ?? raw.original_title,
+    title: raw.name ?? raw.title ?? "",
+    original_title: raw.original_name ?? raw.original_title ?? "",
     overview: raw.overview,
     poster_path: raw.poster_path,
-    release_date: raw.first_air_date ?? raw.release_date,
+    release_date: raw.first_air_date ?? raw.release_date ?? "",
     vote_average: raw.vote_average,
     genre_ids: raw.genre_ids,
     media_type: "tv",
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function normalizeMovie(raw: any): TMDBMovie {
+function normalizeMovie(raw: RawTMDBMovie): TMDBMovie {
   return { ...raw, media_type: "movie" };
 }
 
@@ -118,14 +140,14 @@ async function fetchMoviePages(prefs: QuestionnaireAnswers, lang?: string): Prom
   const params = buildMovieParams(prefs, lang);
   const extra = randomExtraPages(2, 2, 8);
   const pages = await Promise.all([1, ...extra].map((p) => fetchPageRaw("discover/movie", params, p)));
-  return pages.flat().map(normalizeMovie);
+  return pages.flat().map((r) => normalizeMovie(r as RawTMDBMovie));
 }
 
 async function fetchTvPages(prefs: QuestionnaireAnswers, lang?: string): Promise<TMDBMovie[]> {
   const params = buildTvParams(prefs, lang);
   const extra = randomExtraPages(2, 2, 8);
   const pages = await Promise.all([1, ...extra].map((p) => fetchPageRaw("discover/tv", params, p)));
-  return pages.flat().map(normalizeTv);
+  return pages.flat().map((r) => normalizeTv(r as RawTMDBTvShow));
 }
 
 export function dedupe(movies: TMDBMovie[]): TMDBMovie[] {

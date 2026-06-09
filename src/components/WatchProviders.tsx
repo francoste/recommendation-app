@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type { WatchProvider } from "@/lib/types";
 
 interface Props {
@@ -54,6 +55,8 @@ function ProviderLogo({ provider }: { provider: WatchProvider }) {
     <img
       src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
       alt={provider.name}
+      loading="lazy"
+      decoding="async"
       className="w-12 h-12 rounded-lg object-cover border border-beige-200 transition-transform hover:scale-110"
     />
   );
@@ -73,8 +76,14 @@ function ProviderLogo({ provider }: { provider: WatchProvider }) {
 }
 
 export function WatchProviders({ flatrate, rent, loading }: Props) {
-  const flatrateFiltered = dedupeByUrl(flatrate.filter((p) => !ADDON_CHANNEL.test(p.name)));
-  const rentFiltered = dedupeByUrl(rent.filter((p) => !ADDON_CHANNEL.test(p.name)));
+  const flatrateFiltered = useMemo(
+    () => dedupeByUrl(flatrate.filter((p) => !ADDON_CHANNEL.test(p.name))),
+    [flatrate]
+  );
+  const rentFiltered = useMemo(
+    () => dedupeByUrl(rent.filter((p) => !ADDON_CHANNEL.test(p.name))),
+    [rent]
+  );
 
   return (
     <div className="bg-beige-50 rounded-2xl p-5 border border-beige-200 shadow-md mt-0">

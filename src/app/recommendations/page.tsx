@@ -6,28 +6,12 @@ import { MovieCard, StarRating } from "@/components/MovieCard";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { PreferencesPanel } from "@/components/PreferencesPanel";
 import { WatchProviders } from "@/components/WatchProviders";
+import { ExpandableDescription } from "@/components/ExpandableDescription";
 import type { Preferences, RecommendedMovie, WatchProvider } from "@/lib/types";
 
 interface ProvidersState {
   flatrate: WatchProvider[];
   rent: WatchProvider[];
-}
-
-function ExpandableDescription({ text }: { text: string }) {
-  const [expanded, setExpanded] = useState(false);
-  return (
-    <div>
-      <p className={`text-sm text-stone-600 leading-relaxed ${expanded ? "" : "line-clamp-4"}`}>
-        {text}
-      </p>
-      <button
-        onClick={() => setExpanded((v) => !v)}
-        className="text-xs text-cyan-700 hover:text-cyan-900 mt-1 font-medium transition-colors"
-      >
-        {expanded ? "ver menos" : "ver más..."}
-      </button>
-    </div>
-  );
 }
 
 function pickRandom<T>(arr: T[]): T {
@@ -46,11 +30,11 @@ export default function RecommendationsPage() {
   const [spinning, setSpinning] = useState(false);
   const seenIds = useRef<Set<number>>(new Set());
 
-  const fetchProviders = useCallback(async (movieId: number) => {
+  const fetchProviders = useCallback(async (movieId: number, mediaType: string) => {
     setLoadingProviders(true);
     setProviders(null);
     try {
-      const res = await fetch(`/api/providers?id=${movieId}`);
+      const res = await fetch(`/api/providers?id=${movieId}&type=${mediaType}`);
       const data = await res.json();
       if (!data.error) setProviders({ flatrate: data.flatrate ?? [], rent: data.rent ?? [] });
     } catch {
@@ -64,7 +48,7 @@ export default function RecommendationsPage() {
     (movie: RecommendedMovie) => {
       seenIds.current.add(movie.id);
       setCurrentMovie(movie);
-      fetchProviders(movie.id);
+      fetchProviders(movie.id, movie.media_type ?? "movie");
     },
     [fetchProviders]
   );
@@ -110,8 +94,6 @@ export default function RecommendationsPage() {
     selectMovie(pickRandom(pool));
   };
 
-  const isPareja = prefs?.mode === "pareja";
-
   return (
     <main className="min-h-screen bg-beige-100 pb-16">
       <div className="mx-auto px-4 pt-8 max-w-6xl">
@@ -140,67 +122,65 @@ export default function RecommendationsPage() {
         )}
 
         {!loading && !error && currentMovie && (
-          <>
-            <div className="flex flex-col lg:flex-row gap-6 items-start animate-fade-in">
+          <div className="flex flex-col lg:flex-row gap-6 items-start animate-fade-in">
 
-              {/* Col 1 — Poster */}
-              <div className="w-full lg:w-1/4">
-                <MovieCard movie={currentMovie} posterOnly />
-              </div>
+            {/* Col 1 — Poster */}
+            <div className="w-full lg:w-1/4">
+              <MovieCard movie={currentMovie} posterOnly />
+            </div>
 
-              {/* Col 2 — Título, rating, descripción y dónde verla */}
-              <div className="w-full lg:w-5/12 flex flex-col gap-4">
-                <div className="bg-beige-50 rounded-2xl border border-beige-200 shadow-md p-5 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <h2 className="font-serif text-2xl text-stone-900 leading-tight">
-                      {currentMovie.title}
-                    </h2>
-                    {currentMovie.media_type === "tv" && (
-                      <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
-                        Serie
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-stone-400">
-                      {currentMovie.release_date?.slice(0, 4) ?? "?"}
+            {/* Col 2 — Título, rating, descripción y dónde verla */}
+            <div className="w-full lg:w-5/12 flex flex-col gap-4">
+              <div className="bg-beige-50 rounded-2xl border border-beige-200 shadow-md p-5 flex flex-col gap-3">
+                <div className="flex items-start justify-between gap-2">
+                  <h2 className="font-serif text-2xl text-stone-900 leading-tight">
+                    {currentMovie.title}
+                  </h2>
+                  {currentMovie.media_type === "tv" && (
+                    <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">
+                      Serie
                     </span>
-                    <StarRating score={currentMovie.vote_average} />
-                  </div>
-                  {currentMovie.overview && (
-                    <ExpandableDescription key={currentMovie.id} text={currentMovie.overview} />
                   )}
                 </div>
-                <WatchProviders
-                  flatrate={providers?.flatrate ?? []}
-                  rent={providers?.rent ?? []}
-                  loading={loadingProviders}
-                />
-              </div>
-
-              {/* Col 3 — Panel lateral */}
-              <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:sticky lg:top-8">
-                <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleRefresh}
-                    disabled={loadingProviders}
-                    className="flex-1 py-3 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                  >
-                    <span className={spinning ? "inline-block animate-spin-once" : "inline-block"}>🔀</span>
-                    {" "}Otra
-                  </button>
-                  <button
-                    onClick={() => router.push("/")}
-                    className="flex-1 py-3 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white text-sm"
-                  >
-                    Nueva búsqueda
-                  </button>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-stone-400">
+                    {currentMovie.release_date?.slice(0, 4) ?? "?"}
+                  </span>
+                  <StarRating score={currentMovie.vote_average} />
                 </div>
+                {currentMovie.overview && (
+                  <ExpandableDescription key={currentMovie.id} text={currentMovie.overview} />
+                )}
               </div>
-
+              <WatchProviders
+                flatrate={providers?.flatrate ?? []}
+                rent={providers?.rent ?? []}
+                loading={loadingProviders}
+              />
             </div>
-          </>
+
+            {/* Col 3 — Panel lateral */}
+            <div className="w-full lg:w-1/3 flex flex-col gap-4 lg:sticky lg:top-8">
+              <PreferencesPanel person1={prefs!.person1} person2={prefs?.person2} />
+              <div className="flex gap-2">
+                <button
+                  onClick={handleRefresh}
+                  disabled={loadingProviders}
+                  className="flex-1 py-3 rounded-xl text-white bg-cyan-800 font-semibold active:scale-95 transition-transform hover:bg-cyan-900 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                >
+                  <span className={spinning ? "inline-block animate-spin-once" : "inline-block"}>🔀</span>
+                  {" "}Otra
+                </button>
+                <button
+                  onClick={() => router.push("/")}
+                  className="flex-1 py-3 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-transform hover:bg-white text-sm"
+                >
+                  Nueva búsqueda
+                </button>
+              </div>
+            </div>
+
+          </div>
         )}
       </div>
     </main>

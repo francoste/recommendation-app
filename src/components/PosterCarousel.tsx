@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 interface Poster {
   id: number;
@@ -22,7 +22,7 @@ export default function PosterCarousel() {
     return <div className="h-[200px] w-full max-w-2xl mx-auto" />;
   }
 
-  const items = [...posters, ...posters];
+  const items = useMemo(() => [...posters, ...posters], [posters]);
 
   return (
     <div
@@ -45,6 +45,8 @@ export default function PosterCarousel() {
             <img
               src={`https://image.tmdb.org/t/p/w200${poster.poster_path}`}
               alt={poster.title}
+              loading="lazy"
+              decoding="async"
               className="w-full h-full object-cover"
             />
           </div>

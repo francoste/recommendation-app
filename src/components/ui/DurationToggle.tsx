@@ -34,6 +34,7 @@ export function DurationToggle({ value, onChange, contentType }: Props) {
             <button
               key={opt.value}
               onClick={() => toggle(opt.value)}
+              aria-pressed={selected}
               className={`flex-1 py-3 rounded-xl border text-center transition-all active:scale-95 ${
                 selected
                   ? "border-cyan-700 bg-cyan-800 text-white"

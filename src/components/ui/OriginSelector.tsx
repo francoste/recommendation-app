@@ -22,6 +22,7 @@ export function OriginSelector({ value, onChange }: Props) {
         <button
           key={orig.value}
           onClick={() => onChange(orig.value)}
+          aria-pressed={value === orig.value}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border text-sm font-medium transition-all active:scale-95 ${
             value === orig.value
               ? "border-cyan-700 bg-cyan-800 text-white"
