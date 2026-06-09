@@ -19,7 +19,15 @@ export default function PosterCarousel() {
   useEffect(() => {
     fetch("/api/posters")
       .then((r) => r.json())
-      .then((d) => setPosters(d.posters ?? []))
+      .then((d) => {
+        const raw: Poster[] = d.posters ?? [];
+        // Fisher-Yates shuffle client-side so each page load is different
+        for (let i = raw.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [raw[i], raw[j]] = [raw[j], raw[i]];
+        }
+        setPosters(raw.slice(0, 10));
+      })
       .catch(() => {});
   }, []);
 
