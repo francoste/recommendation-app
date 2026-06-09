@@ -104,7 +104,7 @@ export default function RecommendationsPage() {
           ← Volver
         </button>
 
-        <h1 className="font-serif text-3xl text-stone-900 text-center mb-1">Tu recomendación 🎬</h1>
+        <h1 className="font-display text-4xl tracking-wide text-stone-900 text-center mb-1 uppercase">Tu recomendación 🎬</h1>
         <p className="text-center text-stone-400 text-sm mb-8">Basada en tus preferencias</p>
 
         {loading && <LoadingSpinner />}

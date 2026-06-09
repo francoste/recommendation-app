@@ -97,7 +97,7 @@ export function QuestionnaireClient() {
 
         {mode === "pareja" && <ProgressStepper step={person} />}
 
-        <h1 className="font-serif text-2xl text-stone-900 text-center">{title}</h1>
+        <h1 className="font-display text-3xl tracking-wide text-stone-900 text-center uppercase">{title}</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <section>
