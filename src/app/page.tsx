@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import type { ContentType } from "@/lib/types";
+import PosterCarousel from "@/components/PosterCarousel";
 
 const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
   { value: "pelicula", label: "Películas" },
@@ -15,17 +16,13 @@ export default function Home() {
   const qs = `&type=${contentType}`;
 
   return (
-    <main className="min-h-screen bg-beige-100 flex flex-col items-center justify-center px-6 py-12">
-      <div className="max-w-sm w-full flex flex-col items-center gap-8 animate-fade-in">
+    <main className="min-h-screen bg-beige-100 flex flex-col items-center justify-center py-8 gap-8">
+      <PosterCarousel />
 
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-20 h-20 rounded-2xl bg-cyan-800 flex items-center justify-center shadow-lg">
-            <span className="text-4xl">🎬</span>
-          </div>
-          <div className="text-center">
-            <h1 className="font-serif text-4xl text-stone-900 mb-1">Recomendaciones</h1>
-            <p className="text-stone-400 text-sm">¿Qué querés ver hoy?</p>
-          </div>
+      <div className="max-w-sm w-full px-6 flex flex-col items-center gap-8 animate-fade-in">
+        <div className="text-center">
+          <h1 className="font-serif text-4xl text-stone-900 mb-1">Recomendaciones</h1>
+          <p className="text-stone-400 text-sm">¿Qué querés ver hoy?</p>
         </div>
 
         <div className="flex w-full rounded-xl overflow-hidden border border-beige-200 bg-beige-50 shadow-sm">
