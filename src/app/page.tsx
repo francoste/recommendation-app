@@ -21,7 +21,7 @@ export default function Home() {
 
       <div className="max-w-sm w-full px-6 flex flex-col items-center gap-8 animate-fade-in">
         <div className="text-center">
-          <h1 className="font-serif text-4xl text-stone-900 mb-1">El Recomendador</h1>
+          <h1 className="font-display text-5xl tracking-wide text-stone-900 mb-1">EL RECOMENDADOR</h1>
           <p className="text-stone-400 text-sm">¿Qué querés ver hoy?</p>
         </div>
 
