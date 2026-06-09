@@ -6,18 +6,55 @@ interface Props {
   loading: boolean;
 }
 
+const PROVIDER_URLS: Record<number, string> = {
+  8:    "https://www.netflix.com",
+  9:    "https://www.amazon.com/prime-video",
+  10:   "https://www.amazon.com/prime-video",
+  119:  "https://www.primevideo.com",
+  337:  "https://www.disneyplus.com",
+  384:  "https://www.max.com",
+  1825: "https://www.max.com",
+  619:  "https://www.starplus.com",
+  350:  "https://tv.apple.com",
+  531:  "https://www.paramountplus.com",
+  11:   "https://mubi.com",
+  283:  "https://www.crunchyroll.com",
+  167:  "https://www.clarovideo.com",
+  300:  "https://pluto.tv",
+  386:  "https://www.peacocktv.com",
+  3:    "https://play.google.com/store/movies",
+  188:  "https://www.youtube.com/premium",
+};
+
 function ProviderLogo({ provider }: { provider: WatchProvider }) {
-  return (
-    <div className="flex flex-col items-center gap-1 w-16">
+  const url = PROVIDER_URLS[provider.id];
+  const inner = (
+    <>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={`https://image.tmdb.org/t/p/w92${provider.logo_path}`}
         alt={provider.name}
-        className="w-12 h-12 rounded-lg object-cover border border-beige-200"
+        className="w-12 h-12 rounded-lg object-cover border border-beige-200 transition-transform hover:scale-110"
       />
       <span className="text-xs text-stone-500 text-center leading-tight">{provider.name}</span>
-    </div>
+    </>
   );
+
+  if (url) {
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex flex-col items-center gap-1 w-16"
+        title={`Ir a ${provider.name}`}
+      >
+        {inner}
+      </a>
+    );
+  }
+
+  return <div className="flex flex-col items-center gap-1 w-16">{inner}</div>;
 }
 
 export function WatchProviders({ flatrate, rent, loading }: Props) {
