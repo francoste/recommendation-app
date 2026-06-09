@@ -35,6 +35,17 @@ const PROVIDER_URLS: Record<number, string> = {
 // Canales add-on que no son plataformas propias (ej. "Paramount+ Amazon Channel")
 const ADDON_CHANNEL = /(Amazon|Apple TV)\s+Channel/i;
 
+function dedupeByUrl(providers: WatchProvider[]): WatchProvider[] {
+  const seen = new Set<string>();
+  return providers.filter((p) => {
+    const url = PROVIDER_URLS[p.id];
+    if (!url) return true;
+    if (seen.has(url)) return false;
+    seen.add(url);
+    return true;
+  });
+}
+
 function ProviderLogo({ provider }: { provider: WatchProvider }) {
   const url = PROVIDER_URLS[provider.id];
 
@@ -62,8 +73,8 @@ function ProviderLogo({ provider }: { provider: WatchProvider }) {
 }
 
 export function WatchProviders({ flatrate, rent, loading }: Props) {
-  const flatrateFiltered = flatrate.filter((p) => !ADDON_CHANNEL.test(p.name));
-  const rentFiltered = rent.filter((p) => !ADDON_CHANNEL.test(p.name));
+  const flatrateFiltered = dedupeByUrl(flatrate.filter((p) => !ADDON_CHANNEL.test(p.name)));
+  const rentFiltered = dedupeByUrl(rent.filter((p) => !ADDON_CHANNEL.test(p.name)));
 
   return (
     <div className="bg-beige-50 rounded-2xl p-5 border border-beige-200 shadow-md mt-0">
