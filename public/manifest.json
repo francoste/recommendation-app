@@ -1,7 +1,7 @@
 {
-  "name": "Recomendaciones de Películas",
-  "short_name": "Recomendaciones",
-  "description": "Encontrá tu próxima película favorita",
+  "name": "El Recomendador",
+  "short_name": "El Recomendador",
+  "description": "Encontrá tu próxima película o serie",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5ede0",
