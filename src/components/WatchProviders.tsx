@@ -27,7 +27,7 @@ const PROVIDER_URLS: Record<number, string> = {
   188:  "https://www.youtube.com/premium",
   // Argentina
   167:  "https://www.clarovideo.com",
-  339:  "https://www.flow.com.ar",
+  339:  "https://tv.movistar.com.ar",
   149:  "https://tv.movistar.com.ar",
   202:  "https://www.directvgo.com",
 };
