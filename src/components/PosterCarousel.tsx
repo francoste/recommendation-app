@@ -19,16 +19,19 @@ export default function PosterCarousel() {
   }, []);
 
   if (posters.length === 0) {
-    return <div className="h-[160px] w-full" />;
+    return <div className="h-[200px] w-full max-w-2xl mx-auto" />;
   }
 
   const items = [...posters, ...posters];
 
   return (
-    <div className="relative w-full overflow-hidden h-[160px]">
-      <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-beige-100 to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-beige-100 to-transparent z-10 pointer-events-none" />
-
+    <div
+      className="w-full max-w-2xl mx-auto overflow-hidden h-[200px]"
+      style={{
+        maskImage: "linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)",
+        WebkitMaskImage: "linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)",
+      }}
+    >
       <div
         className="flex gap-3 animate-marquee hover:[animation-play-state:paused]"
         style={{ width: "max-content" }}
@@ -36,7 +39,7 @@ export default function PosterCarousel() {
         {items.map((poster, i) => (
           <div
             key={`${poster.id}-${i}`}
-            className="flex-shrink-0 w-[107px] h-[160px] rounded-xl overflow-hidden shadow-md"
+            className="flex-shrink-0 w-[133px] h-[200px] rounded-xl overflow-hidden shadow-md"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
