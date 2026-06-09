@@ -10,6 +10,7 @@ interface Poster {
 
 export default function PosterCarousel() {
   const [posters, setPosters] = useState<Poster[]>([]);
+  const items = useMemo(() => [...posters, ...posters], [posters]);
 
   useEffect(() => {
     fetch("/api/posters")
@@ -21,8 +22,6 @@ export default function PosterCarousel() {
   if (posters.length === 0) {
     return <div className="h-[200px] w-full max-w-2xl mx-auto" />;
   }
-
-  const items = useMemo(() => [...posters, ...posters], [posters]);
 
   return (
     <div
