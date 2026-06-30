@@ -192,9 +192,9 @@ async function fetchByType(prefs: QuestionnaireAnswers, contentType: ContentType
   }
 
   if (contentType === "serie") {
-    return (await fetchAllLangs(fetchTvPages)).slice(0, 60);
+    return (await fetchAllLangs(fetchTvPages)).filter((m) => m.poster_path).slice(0, 60);
   }
-  return (await fetchAllLangs(fetchMoviePages)).slice(0, 60);
+  return (await fetchAllLangs(fetchMoviePages)).filter((m) => m.poster_path).slice(0, 60);
 }
 
 export async function fetchMovieCandidates(prefs: QuestionnaireAnswers, contentType: ContentType = "pelicula"): Promise<TMDBMovie[]> {
@@ -230,7 +230,7 @@ export async function fetchBrowseResults(
   }
 
   return {
-    results: dedupe(allResults).sort((a, b) => b.vote_average - a.vote_average).slice(0, 60),
+    results: dedupe(allResults).filter((m) => m.poster_path).sort((a, b) => b.vote_average - a.vote_average).slice(0, 60),
     total,
   };
 }

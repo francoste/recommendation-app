@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
         : { ...m, media_type: "movie" }
     );
 
-    return NextResponse.json({ results, total: data.total_results ?? 0 });
+    return NextResponse.json({ results: results.filter((m: { poster_path: string | null }) => m.poster_path), total: data.total_results ?? 0 });
   } catch {
     return NextResponse.json({ results: [], total: 0 });
   }
