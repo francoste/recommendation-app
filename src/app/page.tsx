@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { ContentType, TMDBMovie } from "@/lib/types";
@@ -19,9 +19,18 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [searching, setSearching] = useState(false);
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRowRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = () => setShowScrollTop(window.scrollY > 400);
+    window.addEventListener("scroll", handler, { passive: true });
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  const scrollToTop = useCallback(() => window.scrollTo({ top: 0, behavior: "smooth" }), []);
 
   // Auto-focus input when search opens
   useEffect(() => {
@@ -150,13 +159,32 @@ export default function Home() {
 
       {/* Resultados de búsqueda */}
       {showNoResults && (
-        <p className="text-stone-400 text-sm">Sin resultados para "{query}".</p>
+        <p className="text-stone-400 text-sm">Sin resultados para &ldquo;{query}&rdquo;.</p>
       )}
 
       {hasResults && (
-        <div ref={resultsRef} className="w-full max-w-5xl px-4 pb-8">
+        <div ref={resultsRef} className="w-full max-w-5xl px-4 pb-8 flex flex-col gap-4">
+          {query.trim() && !searching && (
+            <p className="text-sm text-stone-500 px-1">
+              Resultados de búsqueda para{" "}
+              <span className="font-semibold text-stone-700">&ldquo;{query.trim()}&rdquo;</span>
+            </p>
+          )}
           <MovieGrid movies={results} loading={searching} />
         </div>
+      )}
+
+      {/* Scroll to top */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-40 w-11 h-11 rounded-full bg-cyan-800 text-white shadow-lg flex items-center justify-center hover:bg-cyan-900 active:scale-95 transition-all"
+          aria-label="Volver arriba"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+          </svg>
+        </button>
       )}
     </main>
   );
