@@ -18,7 +18,10 @@ export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<TMDBMovie[]>([]);
+  const [searchTotal, setSearchTotal] = useState(0);
+  const [searchPage, setSearchPage] = useState(1);
   const [searching, setSearching] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRowRef = useRef<HTMLDivElement>(null);
@@ -56,19 +59,21 @@ export default function Home() {
   }, [searchOpen]);
 
   // Reset results when content type changes
-  useEffect(() => { setResults([]); setQuery(""); }, [contentType]);
+  useEffect(() => { setResults([]); setQuery(""); setSearchTotal(0); setSearchPage(1); }, [contentType]);
 
-  // Debounced search
+  // Debounced search (page 1, replaces results)
   useEffect(() => {
     if (!searchOpen) return;
     const q = query.trim();
-    if (!q) { setResults([]); return; }
+    if (!q) { setResults([]); setSearchTotal(0); setSearchPage(1); return; }
     const timer = setTimeout(async () => {
       setSearching(true);
       try {
-        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${contentType}`);
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${contentType}&page=1`);
         const data = await res.json();
         setResults(data.results ?? []);
+        setSearchTotal(data.total ?? 0);
+        setSearchPage(1);
       } catch {
         setResults([]);
       } finally {
@@ -77,6 +82,27 @@ export default function Home() {
     }, 400);
     return () => clearTimeout(timer);
   }, [query, searchOpen, contentType]);
+
+  const loadMoreSearch = useCallback(async () => {
+    const q = query.trim();
+    if (!q) return;
+    const nextPage = searchPage + 1;
+    setLoadingMore(true);
+    try {
+      const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${contentType}&page=${nextPage}`);
+      const data = await res.json();
+      const newResults = (data.results ?? []) as TMDBMovie[];
+      setResults((prev) => {
+        const ids = new Set(prev.map((m) => m.id));
+        return [...prev, ...newResults.filter((m) => !ids.has(m.id))];
+      });
+      setSearchPage(nextPage);
+    } catch {
+      // silent
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [query, contentType, searchPage]);
 
   const qs = `&type=${contentType}`;
   const hasResults = searching || results.length > 0;
@@ -165,12 +191,30 @@ export default function Home() {
       {hasResults && (
         <div ref={resultsRef} className="w-full max-w-5xl px-4 pb-8 flex flex-col gap-4">
           {query.trim() && !searching && (
-            <p className="text-sm text-stone-500 px-1">
-              Resultados de búsqueda para{" "}
-              <span className="font-semibold text-stone-700">&ldquo;{query.trim()}&rdquo;</span>
-            </p>
+            <div className="flex items-baseline justify-between px-1">
+              <p className="text-sm text-stone-500">
+                Resultados de búsqueda para{" "}
+                <span className="font-semibold text-stone-700">&ldquo;{query.trim()}&rdquo;</span>
+              </p>
+              {searchTotal > 0 && (
+                <span className="text-xs text-stone-400 whitespace-nowrap ml-3">
+                  {results.length} de {searchTotal.toLocaleString()} títulos
+                </span>
+              )}
+            </div>
           )}
           <MovieGrid movies={results} loading={searching} />
+          {!searching && results.length > 0 && results.length < searchTotal && (
+            <div className="flex justify-center pt-2 pb-4">
+              <button
+                onClick={loadMoreSearch}
+                disabled={loadingMore}
+                className="px-6 py-3 rounded-xl bg-cyan-800 text-white text-sm font-semibold hover:bg-cyan-900 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loadingMore ? "Cargando…" : "Ver más"}
+              </button>
+            </div>
+          )}
         </div>
       )}
 
