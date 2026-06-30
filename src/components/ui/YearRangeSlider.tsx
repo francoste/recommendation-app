@@ -1,7 +1,7 @@
 "use client";
 
 const YEAR_MIN = 1960;
-const YEAR_MAX = 2024;
+const YEAR_MAX = new Date().getFullYear();
 
 interface Props {
   min: number;

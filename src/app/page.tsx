@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import type { ContentType } from "@/lib/types";
+import type { ContentType, TMDBMovie } from "@/lib/types";
+import { MovieGrid } from "@/components/MovieGrid";
 
 const PosterCarousel = dynamic(() => import("@/components/PosterCarousel"), { ssr: false });
 
@@ -14,11 +15,66 @@ const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
 
 export default function Home() {
   const [contentType, setContentType] = useState<ContentType>("pelicula");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<TMDBMovie[]>([]);
+  const [searching, setSearching] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const searchRowRef = useRef<HTMLDivElement>(null);
+  const resultsRef = useRef<HTMLDivElement>(null);
+
+  // Auto-focus input when search opens
+  useEffect(() => {
+    if (searchOpen) inputRef.current?.focus();
+    else { setQuery(""); setResults([]); }
+  }, [searchOpen]);
+
+  // Cerrar al tocar fuera
+  useEffect(() => {
+    if (!searchOpen) return;
+    function handleClickOutside(e: MouseEvent | TouchEvent) {
+      const target = e.target as Node;
+      const insideRow = searchRowRef.current?.contains(target);
+      const insideResults = resultsRef.current?.contains(target);
+      if (!insideRow && !insideResults) setSearchOpen(false);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [searchOpen]);
+
+  // Reset results when content type changes
+  useEffect(() => { setResults([]); setQuery(""); }, [contentType]);
+
+  // Debounced search
+  useEffect(() => {
+    if (!searchOpen) return;
+    const q = query.trim();
+    if (!q) { setResults([]); return; }
+    const timer = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(q)}&type=${contentType}`);
+        const data = await res.json();
+        setResults(data.results ?? []);
+      } catch {
+        setResults([]);
+      } finally {
+        setSearching(false);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [query, searchOpen, contentType]);
 
   const qs = `&type=${contentType}`;
+  const hasResults = searching || results.length > 0;
+  const showNoResults = searchOpen && !searching && query.trim() && results.length === 0;
 
   return (
-    <main className="min-h-screen bg-beige-100 flex flex-col items-center justify-center py-8 gap-8">
+    <main className={`min-h-screen bg-beige-100 flex flex-col items-center py-8 gap-8 ${!hasResults && !showNoResults ? "justify-center" : ""}`}>
       <PosterCarousel />
 
       <div className="max-w-sm w-full px-6 flex flex-col items-center gap-8 animate-fade-in">
@@ -33,9 +89,7 @@ export default function Home() {
               key={value}
               onClick={() => setContentType(value)}
               className={`flex-1 py-3 text-sm font-semibold transition-colors ${
-                contentType === value
-                  ? "bg-cyan-800 text-white"
-                  : "text-stone-500 hover:bg-beige-200"
+                contentType === value ? "bg-cyan-800 text-white" : "text-stone-500 hover:bg-beige-200"
               }`}
             >
               {label}
@@ -56,8 +110,54 @@ export default function Home() {
           >
             Ver solo 🎬
           </Link>
+
+          <div ref={searchRowRef} className="flex gap-2 pt-1">
+            {/* Botón lupa — toggle */}
+            <button
+              onClick={() => setSearchOpen((v) => !v)}
+              className={`flex-shrink-0 flex items-center justify-center w-14 py-3 rounded-xl border shadow-sm active:scale-95 transition-all ${
+                searchOpen
+                  ? "border-cyan-700 bg-cyan-800 text-white"
+                  : "border-beige-200 bg-beige-50 text-stone-500 hover:bg-white"
+              }`}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+
+            {/* Input de búsqueda o botón explorar */}
+            {searchOpen ? (
+              <input
+                ref={inputRef}
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={contentType === "serie" ? "Buscar serie…" : "Buscar película…"}
+                className="flex-1 px-4 py-3 rounded-xl border border-cyan-700 bg-beige-50 text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-cyan-700 text-sm"
+              />
+            ) : (
+              <Link
+                href={`/browse?type=${contentType}`}
+                className="flex-1 py-3 rounded-xl text-center font-semibold text-stone-500 bg-beige-50 border border-beige-200 shadow-sm active:scale-95 transition-all hover:bg-white hover:shadow-md text-sm"
+              >
+                Explorar catálogo
+              </Link>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Resultados de búsqueda */}
+      {showNoResults && (
+        <p className="text-stone-400 text-sm">Sin resultados para "{query}".</p>
+      )}
+
+      {hasResults && (
+        <div ref={resultsRef} className="w-full max-w-5xl px-4 pb-8">
+          <MovieGrid movies={results} loading={searching} />
+        </div>
+      )}
     </main>
   );
 }

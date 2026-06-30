@@ -136,6 +136,15 @@ async function fetchPageRaw(endpoint: string, baseParams: URLSearchParams, page:
   return data.results ?? [];
 }
 
+async function fetchPageWithTotal(endpoint: string, baseParams: URLSearchParams, page: number): Promise<{ results: unknown[]; total: number }> {
+  const params = new URLSearchParams(baseParams);
+  params.set("page", String(page));
+  const res = await fetch(`${TMDB_BASE}/${endpoint}?${params}`);
+  if (!res.ok) throw new Error(`TMDB error ${res.status}`);
+  const data = await res.json();
+  return { results: data.results ?? [], total: data.total_results ?? 0 };
+}
+
 async function fetchMoviePages(prefs: QuestionnaireAnswers, lang?: string): Promise<TMDBMovie[]> {
   const params = buildMovieParams(prefs, lang);
   const extra = randomExtraPages(2, 2, 8);
@@ -190,4 +199,38 @@ async function fetchByType(prefs: QuestionnaireAnswers, contentType: ContentType
 
 export async function fetchMovieCandidates(prefs: QuestionnaireAnswers, contentType: ContentType = "pelicula"): Promise<TMDBMovie[]> {
   return fetchByType(prefs, contentType);
+}
+
+// Deterministic pagination for browse (batch 1 = TMDB pages 1-3, batch 2 = pages 4-6, …)
+export async function fetchBrowseResults(
+  prefs: QuestionnaireAnswers,
+  contentType: ContentType,
+  batch: number,
+): Promise<{ results: TMDBMovie[]; total: number }> {
+  const startPage = (batch - 1) * 3 + 1;
+  const tmdbPages = [startPage, startPage + 1, startPage + 2];
+
+  const lang = ORIGIN_TO_LANGUAGES[prefs.origin];
+  const langs = lang?.includes("|") ? lang.split("|") : [lang ?? null];
+
+  const endpoint = contentType === "serie" ? "discover/tv" : "discover/movie";
+  const buildParams = contentType === "serie" ? buildTvParams : buildMovieParams;
+  const normalize = contentType === "serie"
+    ? (r: unknown) => normalizeTv(r as RawTMDBTvShow)
+    : (r: unknown) => normalizeMovie(r as RawTMDBMovie);
+
+  let total = 0;
+  const allResults: TMDBMovie[] = [];
+
+  for (const l of langs) {
+    const params = buildParams(prefs, l ?? undefined);
+    const pages = await Promise.all(tmdbPages.map((p) => fetchPageWithTotal(endpoint, params, p)));
+    if (total === 0) total = pages[0].total;
+    pages.forEach(({ results }) => allResults.push(...results.map(normalize)));
+  }
+
+  return {
+    results: dedupe(allResults).sort((a, b) => b.vote_average - a.vote_average).slice(0, 60),
+    total,
+  };
 }

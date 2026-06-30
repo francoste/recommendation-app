@@ -19,14 +19,14 @@ export function QuestionnaireClient() {
 
   const [genres, setGenres] = useState<Genre[]>([]);
   const [yearMin, setYearMin] = useState(1990);
-  const [yearMax, setYearMax] = useState(2024);
+  const [yearMax, setYearMax] = useState(() => new Date().getFullYear());
   const [duration, setDuration] = useState<Duration[]>([]);
   const [origin, setOrigin] = useState<Origin | null>(null);
 
   useEffect(() => {
     setGenres([]);
     setYearMin(1990);
-    setYearMax(2024);
+    setYearMax(new Date().getFullYear());
     setDuration([]);
     setOrigin(null);
   }, [person]);
