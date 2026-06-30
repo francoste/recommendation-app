@@ -170,14 +170,24 @@ export default function Home() {
 
             {/* Input de búsqueda o botón explorar */}
             {searchOpen ? (
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder={contentType === "serie" ? "Buscar serie…" : "Buscar película…"}
-                className="flex-1 px-4 py-3 rounded-xl border border-cyan-700 bg-beige-50 text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-cyan-700 text-sm"
-              />
+              <div className="flex-1 relative flex items-center">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={contentType === "serie" ? "Buscar serie…" : "Buscar película…"}
+                  className="w-full px-4 py-3 pr-16 rounded-xl border border-cyan-700 bg-beige-50 text-stone-900 placeholder:text-stone-300 focus:outline-none focus:ring-2 focus:ring-cyan-700 text-sm"
+                />
+                {query && (
+                  <button
+                    onClick={() => { setQuery(""); inputRef.current?.focus(); }}
+                    className="absolute right-3 text-xs text-stone-400 hover:text-stone-600 transition-colors font-medium"
+                  >
+                    Borrar
+                  </button>
+                )}
+              </div>
             ) : (
               <Link
                 href={`/browse?type=${contentType}`}
