@@ -48,7 +48,8 @@ export default function Home() {
       const target = e.target as Node;
       const insideRow = searchRowRef.current?.contains(target);
       const insideResults = resultsRef.current?.contains(target);
-      if (!insideRow && !insideResults) setSearchOpen(false);
+      // Keep search open while results are visible (user is browsing/scrolling)
+      if (!insideRow && !insideResults && results.length === 0 && !searching) setSearchOpen(false);
     }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
@@ -56,7 +57,7 @@ export default function Home() {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
     };
-  }, [searchOpen]);
+  }, [searchOpen, results.length, searching]);
 
   // Reset results when content type changes
   useEffect(() => { setResults([]); setQuery(""); setSearchTotal(0); setSearchPage(1); }, [contentType]);
