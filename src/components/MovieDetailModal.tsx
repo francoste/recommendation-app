@@ -14,16 +14,25 @@ export function MovieDetailModal({ movie, onClose }: Props) {
   const [flatrate, setFlatrate] = useState<WatchProvider[]>([]);
   const [rent, setRent] = useState<WatchProvider[]>([]);
   const [providersLoading, setProvidersLoading] = useState(false);
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!movie) return;
     setFlatrate([]);
     setRent([]);
+    setTrailerKey(null);
     setProvidersLoading(true);
-    fetch(`/api/providers?id=${movie.id}&type=${movie.media_type === "tv" ? "tv" : "movie"}`)
-      .then((r) => r.json())
-      .then((d) => { setFlatrate(d.flatrate ?? []); setRent(d.rent ?? []); })
+    const type = movie.media_type === "tv" ? "tv" : "movie";
+    Promise.all([
+      fetch(`/api/providers?id=${movie.id}&type=${type}`).then((r) => r.json()),
+      fetch(`/api/trailer?id=${movie.id}&type=${type}`).then((r) => r.json()),
+    ])
+      .then(([provData, trailerData]) => {
+        setFlatrate(provData.flatrate ?? []);
+        setRent(provData.rent ?? []);
+        setTrailerKey(trailerData.key ?? null);
+      })
       .catch(() => {})
       .finally(() => setProvidersLoading(false));
   }, [movie]);
@@ -94,6 +103,20 @@ export function MovieDetailModal({ movie, onClose }: Props) {
               <ExpandableDescription text={movie.overview} />
             ) : (
               <p className="text-sm text-stone-400 italic">Sin descripción disponible.</p>
+            )}
+
+            {trailerKey && (
+              <a
+                href={`https://www.youtube.com/watch?v=${trailerKey}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-cyan-700 hover:text-cyan-900 transition-colors"
+              >
+                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z"/>
+                </svg>
+                Ver trailer
+              </a>
             )}
 
             <WatchProviders flatrate={flatrate} rent={rent} loading={providersLoading} />

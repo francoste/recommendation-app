@@ -28,21 +28,44 @@ export default function RecommendationsPage() {
   const [providers, setProviders] = useState<ProvidersState | null>(null);
   const [loadingProviders, setLoadingProviders] = useState(false);
   const [spinning, setSpinning] = useState(false);
+  const [trailerKey, setTrailerKey] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const seenIds = useRef<Set<number>>(new Set());
 
   const fetchProviders = useCallback(async (movieId: number, mediaType: string) => {
     setLoadingProviders(true);
     setProviders(null);
+    setTrailerKey(null);
+    const type = mediaType === "tv" ? "tv" : "movie";
     try {
-      const res = await fetch(`/api/providers?id=${movieId}&type=${mediaType}`);
-      const data = await res.json();
-      if (!data.error) setProviders({ flatrate: data.flatrate ?? [], rent: data.rent ?? [] });
+      const [provData, trailerData] = await Promise.all([
+        fetch(`/api/providers?id=${movieId}&type=${type}`).then((r) => r.json()),
+        fetch(`/api/trailer?id=${movieId}&type=${type}`).then((r) => r.json()),
+      ]);
+      if (!provData.error) setProviders({ flatrate: provData.flatrate ?? [], rent: provData.rent ?? [] });
+      setTrailerKey(trailerData.key ?? null);
     } catch {
       setProviders({ flatrate: [], rent: [] });
     } finally {
       setLoadingProviders(false);
     }
   }, []);
+
+  const handleShare = useCallback(async () => {
+    if (!currentMovie) return;
+    const url = `${window.location.origin}/rec?id=${currentMovie.id}&type=${currentMovie.media_type}`;
+    try {
+      if (navigator.share && navigator.canShare?.({ url })) {
+        await navigator.share({ title: currentMovie.title, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch {
+      // cancelled or not supported
+    }
+  }, [currentMovie]);
 
   const selectMovie = useCallback(
     (movie: RecommendedMovie) => {
@@ -151,6 +174,19 @@ export default function RecommendationsPage() {
                 {currentMovie.overview && (
                   <ExpandableDescription key={currentMovie.id} text={currentMovie.overview} />
                 )}
+                {trailerKey && (
+                  <a
+                    href={`https://www.youtube.com/watch?v=${trailerKey}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-cyan-700 hover:text-cyan-900 transition-colors"
+                  >
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                    Ver trailer
+                  </a>
+                )}
               </div>
               <WatchProviders
                 flatrate={providers?.flatrate ?? []}
@@ -178,6 +214,12 @@ export default function RecommendationsPage() {
                   Nueva búsqueda
                 </button>
               </div>
+              <button
+                onClick={handleShare}
+                className="w-full py-3 rounded-xl text-stone-600 bg-beige-50 border border-beige-200 font-semibold active:scale-95 transition-all hover:bg-white text-sm"
+              >
+                {copied ? "¡Copiado! ✓" : "Compartir 🔗"}
+              </button>
             </div>
 
           </div>

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#155e75"/>
+  <rect x="0" y="0" width="512" height="90" fill="#0e4863"/>
+  <rect x="0" y="422" width="512" height="90" fill="#0e4863"/>
+  <rect x="22"  y="19" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="105" y="19" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="188" y="19" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="271" y="19" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="354" y="19" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="437" y="19" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="22"  y="441" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="105" y="441" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="188" y="441" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="271" y="441" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="354" y="441" width="52" height="52" rx="10" fill="#155e75"/>
+  <rect x="437" y="441" width="52" height="52" rx="10" fill="#155e75"/>
+  <polygon points="192,152 192,360 364,256" fill="#f5ede0"/>
+</svg>
