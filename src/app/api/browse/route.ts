@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
       yearMax: body.yearMax ?? new Date().getFullYear(),
       duration: (body.duration ?? []) as Duration[],
       origin: (body.origin ?? "cualquiera") as Origin,
+      watchProvider: (body.watchProvider as string | undefined) ?? null,
     };
 
     const { results, total } = await fetchBrowseResults(answers, contentType, batch);

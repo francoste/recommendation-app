@@ -42,10 +42,10 @@ function getDurationRange(durations: Duration[]): { gte?: number; lte?: number }
   };
 }
 
-function getTvTypeFilter(durations: Duration[]): { with_type?: string; "with_episode_count.gte"?: string } {
+function getTvTypeFilter(durations: Duration[]): { with_type?: string; "with_episode_count.gte"?: string; soapGenre?: true } {
   const tv = durations.filter((d): d is typeof TV_DURATIONS[number] => (TV_DURATIONS as readonly string[]).includes(d));
   if (tv.length === 0 || tv.length === 3) return {};
-  if (tv.length === 1 && tv[0] === "telenovela") return { "with_episode_count.gte": "100" };
+  if (tv.length === 1 && tv[0] === "telenovela") return { "with_episode_count.gte": "100", soapGenre: true };
   const types = tv.filter((d) => d !== "telenovela").map((d) => TV_DURATION_TYPE[d]).filter(Boolean);
   return types.length > 0 ? { with_type: types.join("|") } : {};
 }
@@ -64,6 +64,10 @@ function buildMovieParams(prefs: QuestionnaireAnswers, langOverride?: string): U
   const { gte, lte } = getDurationRange(prefs.duration);
   if (gte) params.set("with_runtime.gte", String(gte));
   if (lte) params.set("with_runtime.lte", String(lte));
+  if (prefs.watchProvider) {
+    params.set("with_watch_providers", prefs.watchProvider);
+    params.set("watch_region", "AR");
+  }
   return params;
 }
 
@@ -81,6 +85,14 @@ function buildTvParams(prefs: QuestionnaireAnswers, langOverride?: string): URLS
   const tvFilter = getTvTypeFilter(prefs.duration);
   if (tvFilter.with_type) params.set("with_type", tvFilter.with_type);
   if (tvFilter["with_episode_count.gte"]) params.set("with_episode_count.gte", tvFilter["with_episode_count.gte"]);
+  if (tvFilter.soapGenre) {
+    const existing = params.get("with_genres");
+    params.set("with_genres", existing ? `${existing},10766` : "10766");
+  }
+  if (prefs.watchProvider) {
+    params.set("with_watch_providers", prefs.watchProvider);
+    params.set("watch_region", "AR");
+  }
   return params;
 }
 

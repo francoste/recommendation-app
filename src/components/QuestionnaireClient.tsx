@@ -9,6 +9,17 @@ import { OriginSelector } from "@/components/ui/OriginSelector";
 import { ProgressStepper } from "@/components/ProgressStepper";
 import type { Genre, Duration, Origin, ContentType, QuestionnaireAnswers, Preferences } from "@/lib/types";
 
+const PLATFORMS: { value: string; label: string }[] = [
+  { value: "8",   label: "Netflix" },
+  { value: "9",   label: "Amazon Prime" },
+  { value: "337", label: "Disney+" },
+  { value: "384", label: "Max" },
+  { value: "531", label: "Paramount+" },
+  { value: "350", label: "Apple TV+" },
+  { value: "283", label: "Crunchyroll" },
+  { value: "11",  label: "MUBI" },
+];
+
 export function QuestionnaireClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -22,6 +33,7 @@ export function QuestionnaireClient() {
   const [yearMax, setYearMax] = useState(() => new Date().getFullYear());
   const [duration, setDuration] = useState<Duration[]>([]);
   const [origin, setOrigin] = useState<Origin | null>(null);
+  const [watchProvider, setWatchProvider] = useState<string | null>(null);
 
   useEffect(() => {
     setGenres([]);
@@ -29,6 +41,7 @@ export function QuestionnaireClient() {
     setYearMax(new Date().getFullYear());
     setDuration([]);
     setOrigin(null);
+    setWatchProvider(null);
   }, [person]);
 
   const isComplete = genres.length > 0 && duration.length > 0 && origin !== null;
@@ -42,6 +55,7 @@ export function QuestionnaireClient() {
       yearMax,
       duration,
       origin: origin!,
+      watchProvider,
     };
 
     if (mode === "pareja" && person === 1) {
@@ -133,6 +147,28 @@ export function QuestionnaireClient() {
             <OriginSelector value={origin} onChange={setOrigin} />
           </section>
         </div>
+
+        <section>
+          <h2 className="text-xs font-semibold text-stone-400 uppercase tracking-wider mb-3">
+            Plataforma <span className="normal-case font-normal text-stone-300">(opcional)</span>
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            {PLATFORMS.map((p) => (
+              <button
+                key={p.value}
+                type="button"
+                onClick={() => setWatchProvider(watchProvider === p.value ? null : p.value)}
+                className={`px-3 py-2 rounded-xl border text-sm font-medium transition-all active:scale-95 ${
+                  watchProvider === p.value
+                    ? "border-cyan-700 bg-cyan-800 text-white"
+                    : "border-beige-200 bg-beige-50 text-stone-700 hover:border-beige-300"
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
+        </section>
 
         <button
           onClick={handleSubmit}

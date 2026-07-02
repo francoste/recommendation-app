@@ -11,7 +11,7 @@ const MOVIE_OPTIONS: { value: Duration; label: string; sub: string }[] = [
 const TV_OPTIONS: { value: Duration; label: string; sub: string }[] = [
   { value: "mini-serie", label: "Mini-serie",  sub: "1–10 caps" },
   { value: "serie",      label: "Serie",       sub: "+ de 10 caps" },
-  { value: "telenovela", label: "Telenovela",  sub: "+ de 100 caps" },
+  { value: "telenovela", label: "Largas",       sub: "+ de 100 caps" },
 ];
 
 interface Props {

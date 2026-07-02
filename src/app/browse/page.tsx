@@ -41,7 +41,7 @@ const DURATION_OPTIONS_MOVIE: { value: Duration; label: string }[] = [
 const DURATION_OPTIONS_TV: { value: Duration; label: string }[] = [
   { value: "mini-serie", label: "Mini-serie" },
   { value: "serie",      label: "Serie" },
-  { value: "telenovela", label: "Telenovela" },
+  { value: "telenovela", label: "Largas (+100 caps)" },
 ];
 
 const ORIGIN_OPTIONS: { value: Origin; label: string }[] = [
@@ -50,6 +50,17 @@ const ORIGIN_OPTIONS: { value: Origin; label: string }[] = [
   { value: "latinoamericano", label: "Latinoamericano 🌎" },
   { value: "asiático",        label: "Asiático 🌏" },
   { value: "cualquiera",      label: "Cualquier origen" },
+];
+
+const PROVIDER_OPTIONS: { value: string; label: string }[] = [
+  { value: "8",   label: "Netflix" },
+  { value: "9",   label: "Amazon Prime" },
+  { value: "337", label: "Disney+" },
+  { value: "384", label: "Max" },
+  { value: "531", label: "Paramount+" },
+  { value: "350", label: "Apple TV+" },
+  { value: "283", label: "Crunchyroll" },
+  { value: "11",  label: "MUBI" },
 ];
 
 // ── Chevron icon ─────────────────────────────────────────────────────────────
@@ -273,6 +284,7 @@ function BrowseContent() {
   const [yearMax, setYearMax] = useState(CURRENT_YEAR);
   const [duration, setDuration] = useState<Duration | null>(null);
   const [origin, setOrigin] = useState<Origin | null>(null);
+  const [provider, setProvider] = useState<string | null>(null);
 
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [total, setTotal] = useState(0);
@@ -292,7 +304,7 @@ function BrowseContent() {
   }, []);
 
   const buildBody = useCallback(
-    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null }, b: number) => ({
+    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null; provider: string | null }, b: number) => ({
       contentType,
       batch: b,
       genres: opts.genres,
@@ -300,12 +312,13 @@ function BrowseContent() {
       yearMax: opts.yearMax,
       duration: opts.duration ? [opts.duration] : [],
       origin: opts.origin,
+      watchProvider: opts.provider,
     }),
     [contentType]
   );
 
   const fetchResults = useCallback(
-    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null }) => {
+    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null; provider: string | null }) => {
       setLoading(true);
       setError(null);
       setBatch(1);
@@ -332,7 +345,7 @@ function BrowseContent() {
     fetch("/api/browse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildBody({ genres, yearMin, yearMax, duration, origin }, nextBatch)),
+      body: JSON.stringify(buildBody({ genres, yearMin, yearMax, duration, origin, provider }, nextBatch)),
     })
       .then((r) => r.json())
       .then((data) => {
@@ -346,24 +359,24 @@ function BrowseContent() {
       })
       .catch(() => {})
       .finally(() => setLoadingMore(false));
-  }, [batch, buildBody, genres, yearMin, yearMax, duration, origin]);
+  }, [batch, buildBody, genres, yearMin, yearMax, duration, origin, provider]);
 
   // Debounced auto-fetch on filter change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      fetchResults({ genres, yearMin, yearMax, duration, origin });
+      fetchResults({ genres, yearMin, yearMax, duration, origin, provider });
     }, 350);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [genres, yearMin, yearMax, duration, origin, contentType]);
+  }, [genres, yearMin, yearMax, duration, origin, provider, contentType]);
 
   const hasMore = useMemo(() => results.length > 0 && results.length < Math.min(total, 300), [results.length, total]);
 
-  const hasFilters = genres.length > 0 || yearMin !== YEAR_MIN || yearMax !== CURRENT_YEAR || duration !== null || origin !== null;
+  const hasFilters = genres.length > 0 || yearMin !== YEAR_MIN || yearMax !== CURRENT_YEAR || duration !== null || origin !== null || provider !== null;
 
   function clearFilters() {
-    setGenres([]); setYearMin(YEAR_MIN); setYearMax(CURRENT_YEAR); setDuration(null); setOrigin(null);
+    setGenres([]); setYearMin(YEAR_MIN); setYearMax(CURRENT_YEAR); setDuration(null); setOrigin(null); setProvider(null);
   }
 
   const durationOptions = contentType === "serie" ? DURATION_OPTIONS_TV : DURATION_OPTIONS_MOVIE;
@@ -400,6 +413,13 @@ function BrowseContent() {
             value={origin}
             onChange={setOrigin}
             options={ORIGIN_OPTIONS}
+          />
+
+          <FilterDropdown
+            placeholder="Plataforma"
+            value={provider}
+            onChange={setProvider}
+            options={PROVIDER_OPTIONS}
           />
 
           <YearSliderInline
