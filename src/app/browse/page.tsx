@@ -63,6 +63,69 @@ const PROVIDER_OPTIONS: { value: string; label: string }[] = [
   { value: "11",  label: "MUBI" },
 ];
 
+// ── Provider multi-select dropdown ───────────────────────────────────────────
+function ProviderDropdown({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  useOutsideClick(ref, () => setOpen(false));
+
+  function toggle(id: string) {
+    onChange(value.includes(id) ? value.filter((v) => v !== id) : [...value, id]);
+  }
+
+  const label = value.length === 0
+    ? "Plataforma"
+    : value.length === 1
+    ? PROVIDER_OPTIONS.find((p) => p.value === value[0])?.label ?? "1 plataforma"
+    : `${value.length} plataformas`;
+
+  const active = value.length > 0;
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-sm font-medium transition-colors whitespace-nowrap ${
+          active
+            ? "bg-cyan-800 text-white border-cyan-800"
+            : "bg-beige-50 text-stone-700 border-beige-200 hover:border-stone-300"
+        }`}
+      >
+        {label}
+        <Chevron open={open} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 z-30 bg-white border border-beige-200 rounded-2xl shadow-xl p-1.5 min-w-[175px] overflow-hidden">
+          {PROVIDER_OPTIONS.map((p) => {
+            const checked = value.includes(p.value);
+            return (
+              <label
+                key={p.value}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl cursor-pointer text-sm transition-colors ${
+                  checked ? "bg-cyan-50 text-cyan-900 font-medium" : "text-stone-700 hover:bg-beige-100"
+                }`}
+              >
+                <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-colors ${
+                  checked ? "bg-cyan-800 border-cyan-800" : "border-beige-300 bg-white"
+                }`}>
+                  {checked && (
+                    <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </span>
+                <input type="checkbox" checked={checked} onChange={() => toggle(p.value)} className="sr-only" />
+                {p.label}
+              </label>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Chevron icon ─────────────────────────────────────────────────────────────
 function Chevron({ open }: { open: boolean }) {
   return (
@@ -284,7 +347,7 @@ function BrowseContent() {
   const [yearMax, setYearMax] = useState(CURRENT_YEAR);
   const [duration, setDuration] = useState<Duration | null>(null);
   const [origin, setOrigin] = useState<Origin | null>(null);
-  const [provider, setProvider] = useState<string | null>(null);
+  const [providers, setProviders] = useState<string[]>([]);
 
   const [results, setResults] = useState<TMDBMovie[]>([]);
   const [total, setTotal] = useState(0);
@@ -304,7 +367,7 @@ function BrowseContent() {
   }, []);
 
   const buildBody = useCallback(
-    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null; provider: string | null }, b: number) => ({
+    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null; providers: string[] }, b: number) => ({
       contentType,
       batch: b,
       genres: opts.genres,
@@ -312,13 +375,13 @@ function BrowseContent() {
       yearMax: opts.yearMax,
       duration: opts.duration ? [opts.duration] : [],
       origin: opts.origin,
-      watchProvider: opts.provider,
+      watchProviders: opts.providers.length ? opts.providers : undefined,
     }),
     [contentType]
   );
 
   const fetchResults = useCallback(
-    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null; provider: string | null }) => {
+    (opts: { genres: Genre[]; yearMin: number; yearMax: number; duration: Duration | null; origin: Origin | null; providers: string[] }) => {
       setLoading(true);
       setError(null);
       setBatch(1);
@@ -345,7 +408,7 @@ function BrowseContent() {
     fetch("/api/browse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(buildBody({ genres, yearMin, yearMax, duration, origin, provider }, nextBatch)),
+      body: JSON.stringify(buildBody({ genres, yearMin, yearMax, duration, origin, providers }, nextBatch)),
     })
       .then((r) => r.json())
       .then((data) => {
@@ -359,24 +422,24 @@ function BrowseContent() {
       })
       .catch(() => {})
       .finally(() => setLoadingMore(false));
-  }, [batch, buildBody, genres, yearMin, yearMax, duration, origin, provider]);
+  }, [batch, buildBody, genres, yearMin, yearMax, duration, origin, providers]);
 
   // Debounced auto-fetch on filter change
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      fetchResults({ genres, yearMin, yearMax, duration, origin, provider });
+      fetchResults({ genres, yearMin, yearMax, duration, origin, providers });
     }, 350);
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [genres, yearMin, yearMax, duration, origin, provider, contentType]);
+  }, [genres, yearMin, yearMax, duration, origin, providers, contentType]);
 
   const hasMore = useMemo(() => results.length > 0 && results.length < Math.min(total, 300), [results.length, total]);
 
-  const hasFilters = genres.length > 0 || yearMin !== YEAR_MIN || yearMax !== CURRENT_YEAR || duration !== null || origin !== null || provider !== null;
+  const hasFilters = genres.length > 0 || yearMin !== YEAR_MIN || yearMax !== CURRENT_YEAR || duration !== null || origin !== null || providers.length > 0;
 
   function clearFilters() {
-    setGenres([]); setYearMin(YEAR_MIN); setYearMax(CURRENT_YEAR); setDuration(null); setOrigin(null); setProvider(null);
+    setGenres([]); setYearMin(YEAR_MIN); setYearMax(CURRENT_YEAR); setDuration(null); setOrigin(null); setProviders([]);
   }
 
   const durationOptions = contentType === "serie" ? DURATION_OPTIONS_TV : DURATION_OPTIONS_MOVIE;
@@ -415,12 +478,7 @@ function BrowseContent() {
             options={ORIGIN_OPTIONS}
           />
 
-          <FilterDropdown
-            placeholder="Plataforma"
-            value={provider}
-            onChange={setProvider}
-            options={PROVIDER_OPTIONS}
-          />
+          <ProviderDropdown value={providers} onChange={setProviders} />
 
           <YearSliderInline
             yearMin={yearMin}

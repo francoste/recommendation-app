@@ -33,7 +33,7 @@ export function QuestionnaireClient() {
   const [yearMax, setYearMax] = useState(() => new Date().getFullYear());
   const [duration, setDuration] = useState<Duration[]>([]);
   const [origin, setOrigin] = useState<Origin | null>(null);
-  const [watchProvider, setWatchProvider] = useState<string | null>(null);
+  const [watchProviders, setWatchProviders] = useState<string[]>([]);
 
   useEffect(() => {
     setGenres([]);
@@ -41,7 +41,7 @@ export function QuestionnaireClient() {
     setYearMax(new Date().getFullYear());
     setDuration([]);
     setOrigin(null);
-    setWatchProvider(null);
+    setWatchProviders([]);
   }, [person]);
 
   const isComplete = genres.length > 0 && duration.length > 0 && origin !== null;
@@ -55,7 +55,7 @@ export function QuestionnaireClient() {
       yearMax,
       duration,
       origin: origin!,
-      watchProvider,
+      watchProviders: watchProviders.length ? watchProviders : undefined,
     };
 
     if (mode === "pareja" && person === 1) {
@@ -153,20 +153,25 @@ export function QuestionnaireClient() {
             Plataforma <span className="normal-case font-normal text-stone-300">(opcional)</span>
           </h2>
           <div className="flex flex-wrap gap-2">
-            {PLATFORMS.map((p) => (
-              <button
-                key={p.value}
-                type="button"
-                onClick={() => setWatchProvider(watchProvider === p.value ? null : p.value)}
-                className={`px-3 py-2 rounded-xl border text-sm font-medium transition-all active:scale-95 ${
-                  watchProvider === p.value
-                    ? "border-cyan-700 bg-cyan-800 text-white"
-                    : "border-beige-200 bg-beige-50 text-stone-700 hover:border-beige-300"
-                }`}
-              >
-                {p.label}
-              </button>
-            ))}
+            {PLATFORMS.map((p) => {
+              const active = watchProviders.includes(p.value);
+              return (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() =>
+                    setWatchProviders(active ? watchProviders.filter((v) => v !== p.value) : [...watchProviders, p.value])
+                  }
+                  className={`px-3 py-2 rounded-xl border text-sm font-medium transition-all active:scale-95 ${
+                    active
+                      ? "border-cyan-700 bg-cyan-800 text-white"
+                      : "border-beige-200 bg-beige-50 text-stone-700 hover:border-beige-300"
+                  }`}
+                >
+                  {p.label}
+                </button>
+              );
+            })}
           </div>
         </section>
 

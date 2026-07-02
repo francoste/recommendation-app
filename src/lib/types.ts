@@ -25,7 +25,7 @@ export interface QuestionnaireAnswers {
   yearMax: number;
   duration: Duration[];
   origin: Origin;
-  watchProvider?: string | null;
+  watchProviders?: string[];
 }
 
 export type ContentType = "pelicula" | "serie";

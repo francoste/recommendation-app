@@ -64,8 +64,8 @@ function buildMovieParams(prefs: QuestionnaireAnswers, langOverride?: string): U
   const { gte, lte } = getDurationRange(prefs.duration);
   if (gte) params.set("with_runtime.gte", String(gte));
   if (lte) params.set("with_runtime.lte", String(lte));
-  if (prefs.watchProvider) {
-    params.set("with_watch_providers", prefs.watchProvider);
+  if (prefs.watchProviders?.length) {
+    params.set("with_watch_providers", prefs.watchProviders.join("|"));
     params.set("watch_region", "AR");
   }
   return params;
@@ -89,8 +89,8 @@ function buildTvParams(prefs: QuestionnaireAnswers, langOverride?: string): URLS
     const existing = params.get("with_genres");
     params.set("with_genres", existing ? `${existing},10766` : "10766");
   }
-  if (prefs.watchProvider) {
-    params.set("with_watch_providers", prefs.watchProvider);
+  if (prefs.watchProviders?.length) {
+    params.set("with_watch_providers", prefs.watchProviders.join("|"));
     params.set("watch_region", "AR");
   }
   return params;
