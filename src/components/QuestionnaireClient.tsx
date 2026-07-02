@@ -28,12 +28,15 @@ export function QuestionnaireClient() {
   const person = (parseInt(searchParams.get("person") ?? "1") || 1) as 1 | 2;
   const contentType = (searchParams.get("type") ?? "pelicula") as ContentType;
 
+  const [ready, setReady] = useState(false);
   const [genres, setGenres] = useState<Genre[]>([]);
   const [yearMin, setYearMin] = useState(1990);
   const [yearMax, setYearMax] = useState(() => new Date().getFullYear());
   const [duration, setDuration] = useState<Duration[]>([]);
   const [origin, setOrigin] = useState<Origin | null>(null);
   const [watchProviders, setWatchProviders] = useState<string[]>([]);
+
+  useEffect(() => { setReady(true); }, []);
 
   useEffect(() => {
     setGenres([]);
@@ -100,7 +103,7 @@ export function QuestionnaireClient() {
       : "/";
 
   return (
-    <main className="min-h-screen bg-beige-100 pb-28">
+    <main data-ready={ready ? "true" : undefined} className="min-h-screen bg-beige-100 pb-28">
       <div className="max-w-5xl mx-auto px-4 pt-8 flex flex-col gap-6 animate-fade-in">
         <button
           onClick={() => router.push(backHref)}

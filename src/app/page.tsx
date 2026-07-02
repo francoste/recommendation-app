@@ -14,6 +14,7 @@ const CONTENT_OPTIONS: { value: ContentType; label: string }[] = [
 ];
 
 export default function Home() {
+  const [ready, setReady] = useState(false);
   const [contentType, setContentType] = useState<ContentType>("pelicula");
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -26,6 +27,8 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRowRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setReady(true); }, []);
 
   useEffect(() => {
     const handler = () => setShowScrollTop(window.scrollY > 400);
@@ -110,7 +113,10 @@ export default function Home() {
   const showNoResults = searchOpen && !searching && query.trim() && results.length === 0;
 
   return (
-    <main className={`min-h-screen bg-beige-100 flex flex-col items-center py-8 gap-8 ${!hasResults && !showNoResults ? "justify-center" : ""}`}>
+    <main
+      data-ready={ready ? "true" : undefined}
+      className={`min-h-screen bg-beige-100 flex flex-col items-center py-8 gap-8 ${!hasResults && !showNoResults ? "justify-center" : ""}`}
+    >
       <PosterCarousel />
 
       <div className="max-w-sm w-full px-6 flex flex-col items-center gap-8 animate-fade-in">
@@ -151,6 +157,8 @@ export default function Home() {
             {/* Botón lupa — toggle */}
             <button
               onClick={() => setSearchOpen((v) => !v)}
+              aria-label="Búsqueda"
+              aria-expanded={searchOpen}
               className={`flex-shrink-0 flex items-center justify-center w-14 py-3 rounded-xl border shadow-sm active:scale-95 transition-all ${
                 searchOpen
                   ? "border-cyan-700 bg-cyan-800 text-white"
