@@ -8,20 +8,26 @@ export async function GET(req: Request) {
   if (!id) return NextResponse.json({ key: null });
 
   const endpoint = type === "tv" ? `tv/${id}/videos` : `movie/${id}/videos`;
-  try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/${endpoint}?api_key=${process.env.TMDB_API_KEY}&language=es-MX`
-    );
-    if (!res.ok) return NextResponse.json({ key: null });
+  const base = `https://api.themoviedb.org/3/${endpoint}?api_key=${process.env.TMDB_API_KEY}`;
 
-    const data = await res.json();
-    const videos: { site: string; type: string; official?: boolean; key: string }[] = data.results ?? [];
-
-    const trailer =
+  function pickTrailer(videos: { site: string; type: string; official?: boolean; key: string }[]) {
+    return (
       videos.find((v) => v.site === "YouTube" && v.type === "Trailer" && v.official) ??
       videos.find((v) => v.site === "YouTube" && v.type === "Trailer") ??
-      videos.find((v) => v.site === "YouTube");
+      videos.find((v) => v.site === "YouTube")
+    );
+  }
 
+  try {
+    const [esRes, enRes] = await Promise.all([
+      fetch(`${base}&language=es-MX`),
+      fetch(`${base}&language=en-US`),
+    ]);
+
+    const esVideos = esRes.ok ? ((await esRes.json()).results ?? []) : [];
+    const enVideos = enRes.ok ? ((await enRes.json()).results ?? []) : [];
+
+    const trailer = pickTrailer(esVideos) ?? pickTrailer(enVideos);
     return NextResponse.json({ key: trailer?.key ?? null });
   } catch {
     return NextResponse.json({ key: null });
