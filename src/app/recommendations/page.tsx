@@ -37,33 +37,42 @@ export default function RecommendationsPage() {
     setProviders(null);
     setTrailerKey(null);
     const type = mediaType === "tv" ? "tv" : "movie";
-    try {
-      const [provData, trailerData] = await Promise.all([
-        fetch(`/api/providers?id=${movieId}&type=${type}`).then((r) => r.json()),
-        fetch(`/api/trailer?id=${movieId}&type=${type}`).then((r) => r.json()),
-      ]);
-      if (!provData.error) setProviders({ flatrate: provData.flatrate ?? [], rent: provData.rent ?? [] });
-      setTrailerKey(trailerData.key ?? null);
-    } catch {
+
+    const [provResult, trailerResult] = await Promise.allSettled([
+      fetch(`/api/providers?id=${movieId}&type=${type}`).then((r) => r.json()),
+      fetch(`/api/trailer?id=${movieId}&type=${type}`).then((r) => r.json()),
+    ]);
+
+    if (provResult.status === "fulfilled" && !provResult.value.error) {
+      setProviders({ flatrate: provResult.value.flatrate ?? [], rent: provResult.value.rent ?? [] });
+    } else {
       setProviders({ flatrate: [], rent: [] });
-    } finally {
-      setLoadingProviders(false);
     }
+
+    if (trailerResult.status === "fulfilled") {
+      setTrailerKey(trailerResult.value.key ?? null);
+    }
+
+    setLoadingProviders(false);
   }, []);
 
   const handleShare = useCallback(async () => {
     if (!currentMovie) return;
     const url = `${window.location.origin}/rec?id=${currentMovie.id}&type=${currentMovie.media_type}`;
     try {
-      if (navigator.share && navigator.canShare?.({ url })) {
+      if (navigator.share) {
         await navigator.share({ title: currentMovie.title, url });
-      } else {
-        await navigator.clipboard.writeText(url);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        return;
       }
     } catch {
-      // cancelled or not supported
+      // user cancelled or share failed — fall through to clipboard
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // clipboard not available
     }
   }, [currentMovie]);
 

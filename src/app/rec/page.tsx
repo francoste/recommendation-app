@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { TMDBMovie } from "@/lib/types";
 import { ExpandableDescription } from "@/components/ExpandableDescription";
 import RecProviders from "./RecProviders";
@@ -14,7 +13,7 @@ async function fetchMovie(id: string, type: string): Promise<TMDBMovie | null> {
   try {
     const res = await fetch(
       `https://api.themoviedb.org/3/${endpoint}?api_key=${process.env.TMDB_API_KEY}&language=es-MX`,
-      { next: { revalidate: 3600 } }
+      { cache: "no-store" }
     );
     if (!res.ok) return null;
     const data = await res.json();
@@ -73,12 +72,8 @@ export default async function RecPage({ searchParams }: Props) {
   const type = searchParams.type === "tv" ? "tv" : "movie";
   const id = searchParams.id;
 
-  if (!id) notFound();
-
-  const movie = await fetchMovie(id!, type);
-  if (!movie) notFound();
-
-  const year = movie.release_date?.slice(0, 4);
+  const movie = id ? await fetchMovie(id, type) : null;
+  const year = movie?.release_date?.slice(0, 4);
 
   return (
     <main className="min-h-screen bg-beige-100 flex flex-col items-center py-8 px-4 gap-8">
@@ -95,39 +90,47 @@ export default async function RecPage({ searchParams }: Props) {
           <p className="text-stone-400 text-sm mt-1">Te comparten una recomendación 🎬</p>
         </div>
 
-        {/* Movie card */}
-        <div className="bg-beige-50 rounded-2xl border border-beige-200 shadow-md flex flex-col sm:flex-row gap-5 p-5">
-          {/* Poster */}
-          {movie.poster_path && (
-            <div className="shrink-0 mx-auto sm:mx-0">
-              <div className="w-32 sm:w-40 aspect-[2/3] rounded-xl overflow-hidden border border-beige-200 shadow-sm">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
-                  alt={movie.title}
-                  className="w-full h-full object-cover"
-                />
+        {movie ? (
+          <>
+            {/* Movie card */}
+            <div className="bg-beige-50 rounded-2xl border border-beige-200 shadow-md flex flex-col sm:flex-row gap-5 p-5">
+              {/* Poster */}
+              {movie.poster_path && (
+                <div className="shrink-0 mx-auto sm:mx-0">
+                  <div className="w-32 sm:w-40 aspect-[2/3] rounded-xl overflow-hidden border border-beige-200 shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`https://image.tmdb.org/t/p/w300${movie.poster_path}`}
+                      alt={movie.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="flex flex-col gap-3 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  {movie.media_type === "tv" && (
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-800 text-white">Serie</span>
+                  )}
+                  {year && <span className="text-sm text-stone-400">{year}</span>}
+                  <span className="text-sm text-amber-500 font-medium">★ {movie.vote_average.toFixed(1)}</span>
+                </div>
+
+                <h1 className="font-serif text-2xl text-stone-900 leading-tight">{movie.title}</h1>
+
+                {movie.overview && <ExpandableDescription text={movie.overview} />}
+
+                <RecProviders id={movie.id} type={type} />
               </div>
             </div>
-          )}
-
-          {/* Info */}
-          <div className="flex flex-col gap-3 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              {movie.media_type === "tv" && (
-                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-800 text-white">Serie</span>
-              )}
-              {year && <span className="text-sm text-stone-400">{year}</span>}
-              <span className="text-sm text-amber-500 font-medium">★ {movie.vote_average.toFixed(1)}</span>
-            </div>
-
-            <h1 className="font-serif text-2xl text-stone-900 leading-tight">{movie.title}</h1>
-
-            {movie.overview && <ExpandableDescription text={movie.overview} />}
-
-            <RecProviders id={movie.id} type={type} />
+          </>
+        ) : (
+          <div className="bg-beige-50 rounded-2xl border border-beige-200 p-6 text-center">
+            <p className="text-stone-500 text-sm">No pudimos cargar esta recomendación.</p>
           </div>
-        </div>
+        )}
 
         {/* CTA */}
         <div className="bg-beige-50 rounded-2xl border border-beige-200 p-5 text-center flex flex-col gap-3">
