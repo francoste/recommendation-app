@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { ContentType, TMDBMovie } from "@/lib/types";
 import { MovieGrid } from "@/components/MovieGrid";
+import { MovieDetailModal } from "@/components/MovieDetailModal";
 
 const PosterCarousel = dynamic(() => import("@/components/PosterCarousel"), { ssr: false });
 
@@ -24,6 +25,7 @@ export default function Home() {
   const [searching, setSearching] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [selectedMovie, setSelectedMovie] = useState<TMDBMovie | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const searchRowRef = useRef<HTMLDivElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
@@ -228,7 +230,7 @@ export default function Home() {
               )}
             </div>
           )}
-          <MovieGrid movies={results} loading={searching} />
+          <MovieGrid movies={results} loading={searching} onMovieClick={setSelectedMovie} />
           {!searching && results.length > 0 && results.length < searchTotal && (
             <div className="flex justify-center pt-2 pb-4">
               <button
@@ -255,6 +257,8 @@ export default function Home() {
           </svg>
         </button>
       )}
+
+      <MovieDetailModal movie={selectedMovie} onClose={() => setSelectedMovie(null)} />
     </main>
   );
 }
